@@ -11,15 +11,28 @@ namespace калькулятор
     {
         static void Main(string[] args)
         {
-            string a = null;
+
             Console.WriteLine("Введите выражение:");
             string userStr = Console.ReadLine();
+
+            List<object> tokens = Tokenization(userStr);
+            PrintOutput(tokens);
+            Console.WriteLine();
+        }
+
+        private static void PrintOutput(List<object> tokens)
+        {
+            Console.WriteLine("");
+            Console.WriteLine("Ответ:");
+            RPNCalculator(RPNImport(tokens));
+        }
+
+        private static List<object> Tokenization(string userStr)
+        {
             userStr = userStr.Replace(" ", "");
             string operators = "+-*/^()";
-            List<string> listNum = new List<string>();
-            List<string> listOp = new List<string>();
             List<object> tokens = new List<object>();
-          
+            string a = null;
 
             for (int i = 0; i < userStr.Length; i++)
             {
@@ -27,29 +40,33 @@ namespace калькулятор
                 {
                     a += userStr[i];
                 }
+
                 else if (operators.Contains(userStr[i]))
                 {
                     if (a != null)
                     {
                         tokens.Add(a);
                     }
+
                     tokens.Add(userStr[i]);
                     a = null;
                 }
+
                 else
                 {
                     a += userStr[i];
                 }
+
             }
+
             if (a != null)
-            {  
-                tokens.Add(a); 
+            {
+                tokens.Add(a);
             }
-            Console.WriteLine("");
-            Console.WriteLine("Ответ:");
-            RPNCalculator(RPNImport(tokens));
-            Console.WriteLine();
+
+            return tokens;
         }
+
         static List<object> RPNImport(List<object> tokens)
         {
             Dictionary<string, int> OperationPriority = new Dictionary<string, int>()
@@ -62,6 +79,7 @@ namespace калькулятор
                 {"(", 0 },
                 {")", 1 }
             };
+
             List<object> RPN = new List<object>();
             Stack<object> stackForOp = new Stack<object>();
             for (int i = 0; i < tokens.Count; i++)
@@ -70,28 +88,26 @@ namespace калькулятор
                 {
                     RPN.Add(tokens[i]);
                 }
+
                 else if (float.TryParse(tokens[i].ToString(),out float n1) == false)
                 {
-                    if (stackForOp.Count == 0)
+                    if (stackForOp.Count == 0
+                        || (OperationPriority[tokens[i].ToString()] > OperationPriority[stackForOp.Peek().ToString()])
+                        || (OperationPriority[tokens[i].ToString()] == 0))
                     {
                         stackForOp.Push(tokens[i]);
                     }
-                    else if (OperationPriority[tokens[i].ToString()] > OperationPriority[stackForOp.Peek().ToString()])
-                    {
-                        stackForOp.Push(tokens[i]);
-                    }
-                    else if (OperationPriority[tokens[i].ToString()] == 0)
-                    {
-                        stackForOp.Push(tokens[i]);
-                    }
+
                     else if (OperationPriority[tokens[i].ToString()] == 1)
                     {
                         while (OperationPriority[stackForOp.Peek().ToString()] > 0)
                         {
                             RPN.Add(stackForOp.Pop());
                         }
+
                         stackForOp.Pop();
                     }
+
                     else if (OperationPriority[tokens[i].ToString()] <= OperationPriority[stackForOp.Peek().ToString()] && OperationPriority[tokens[i].ToString()] != 0)
                     {
                         while (stackForOp.Count > 0)
@@ -101,31 +117,39 @@ namespace калькулятор
                                 RPN.Add(stackForOp.Pop());
                                 break;
                             }
+
                             else if (OperationPriority[stackForOp.Peek().ToString()] == 0)
                             {
                                 break;
                             }
+
                             else
                             {
                                 RPN.Add(stackForOp.Pop());
-                            }                            
+                            } 
+                            
                         }
+
                         stackForOp.Push(tokens[i]);
                     }
+                
                 }
+
             }
+
             if (stackForOp.Count > 0)
             {
                 while (stackForOp.Count != 0)
                 {
                     RPN.Add(stackForOp.Pop());
                 }
+
             }
-            var resultRpn = String.Join(", ", RPN.ToArray());
-            Console.WriteLine(resultRpn);
+
             return RPN;
             
         }
+
         public static double RPNCalculator(List<object> RPN)
         {
             Stack<object> stackForResult = new Stack<object>();
@@ -137,83 +161,74 @@ namespace калькулятор
                 {
                     stackForResult.Push(value);
                 }
+
                 else
                 {
                     if (elem == "^")
                     {
-                        double a = Convert.ToDouble(stackForResult.Pop());
-                        double intermediateResult = Math.Pow(Convert.ToDouble(stackForResult.Pop()), a);
-                        stackForResult.Push(intermediateResult);
+                        Exponentiation(stackForResult);
                     }
+
                     else if (elem == "*")
                     {
-                        double intermediateResult = Convert.ToDouble(stackForResult.Pop()) * Convert.ToDouble(stackForResult.Pop());
-                        stackForResult.Push(intermediateResult);
+                        Multiplication(stackForResult);
                     }
+
                     else if (elem == "/")
                     {
-                        double intermediateResult = 1f/(Convert.ToDouble(stackForResult.Pop()) / Convert.ToDouble(stackForResult.Pop()));
-                        stackForResult.Push(intermediateResult);
+                        Division(stackForResult);
                     }
+
                     else if (elem == "+")
                     {
-                        double intermediateResult = Convert.ToDouble(stackForResult.Pop()) + Convert.ToDouble(stackForResult.Pop());
-                        stackForResult.Push(intermediateResult);
+                        Addition(stackForResult);
                     }
+
                     else if (elem == "-")
                     {
-                        double intermediateResult = -(Convert.ToDouble(stackForResult.Pop()) - Convert.ToDouble(stackForResult.Pop()));
-                        stackForResult.Push(intermediateResult);
+                        Subtraction(stackForResult);
                     }
+
                 }
+
             } 
+
             double result = Convert.ToDouble(stackForResult.Pop());
             Console.WriteLine(result);
             return result;
         }
 
-        //static double Calculate(List<string> listNum, List<string> listOp)
-        //{
-        //    double result = Convert.ToDouble(listNum[0]);
-        //    for (int i = 0; i < listOp.Count; i++)
-        //    {
-        //        if (listOp[i] == "*")
-        //        {
-        //            string interimCalc = (Convert.ToDouble(listNum[i]) * Convert.ToDouble(listNum[i + 1])).ToString();
-        //            i = DeleteNumOp(listNum, listOp, i, interimCalc);
-        //        }
-        //        else if (listOp[i] == "/")
-        //        {
-        //            string interimCalc = (Convert.ToDouble(listNum[i]) / Convert.ToDouble(listNum[i + 1])).ToString();
-        //            i = DeleteNumOp(listNum, listOp, i, interimCalc);
-        //        }
-        //    }
-        //    if (listOp.Count == 0) return Convert.ToDouble(listNum[0]);
-        //    else
-        //    {
-        //        for (int i = 0; i < listOp.Count; i++)
-        //        {
-        //            if (listOp[i] == "+")
-        //            {
-        //                result += Convert.ToDouble(listNum[i + 1]);
-        //            }
-        //            else if (listOp[i] == "-")
-        //            {
-        //                result -= Convert.ToDouble(listNum[i + 1]);
-        //            }
-        //        }
-        //        return result;
-        //    }
-        //}
+        private static void Subtraction(Stack<object> stackForResult)
+        {
+            double intermediateResult = -(Convert.ToDouble(stackForResult.Pop()) - Convert.ToDouble(stackForResult.Pop()));
+            stackForResult.Push(intermediateResult);
+        }
 
-        //private static int DeleteNumOp(List<string> listNum, List<string> listOp, int i, string interimCalc)
-        //{
-        //    listNum.Insert(i, interimCalc);
-        //    listNum.RemoveAt(i + 1);
-        //    listNum.RemoveAt(i + 1);
-        //    listOp.RemoveAt(i);
-        //    i--;
-        //    return i;
-        //}
+        private static void Addition(Stack<object> stackForResult)
+        {
+            double intermediateResult = Convert.ToDouble(stackForResult.Pop()) + Convert.ToDouble(stackForResult.Pop());
+            stackForResult.Push(intermediateResult);
+        }
+
+        private static void Division(Stack<object> stackForResult)
+        {
+            double intermediateResult = 1f / (Convert.ToDouble(stackForResult.Pop()) / Convert.ToDouble(stackForResult.Pop()));
+            stackForResult.Push(intermediateResult);
+        }
+
+        private static void Multiplication(Stack<object> stackForResult)
+        {
+            double intermediateResult = Convert.ToDouble(stackForResult.Pop()) * Convert.ToDouble(stackForResult.Pop());
+            stackForResult.Push(intermediateResult);
+        }
+
+        private static void Exponentiation(Stack<object> stackForResult)
+        {
+            double a = Convert.ToDouble(stackForResult.Pop());
+            double intermediateResult = Math.Pow(Convert.ToDouble(stackForResult.Pop()), a);
+            stackForResult.Push(intermediateResult);
+        }
+
     }
+
 }
