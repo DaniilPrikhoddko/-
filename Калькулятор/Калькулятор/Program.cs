@@ -11,7 +11,8 @@ namespace калькулятор
     {
         static void Main(string[] args)
         {
-            string a = "";
+            string a = null;
+            Console.WriteLine("Введите выражение:");
             string userStr = Console.ReadLine();
             userStr = userStr.Replace(" ", "");
             string operators = "+-*/^()";
@@ -22,55 +23,31 @@ namespace калькулятор
 
             for (int i = 0; i < userStr.Length; i++)
             {
-                if (operators.Contains(userStr[i]))
+                if (Char.IsDigit(userStr[i]))
                 {
-                    listOp.Add(userStr[i].ToString());    
+                    a += userStr[i];
                 }
-                if (Char.IsDigit(userStr[i]) && (i != (userStr.Length - 1)))
+                else if (operators.Contains(userStr[i]))
                 {
-                    if (userStr[i] != ')')
-                    {
-                        a += userStr[i].ToString();
-                    }
-                    else
+                    if (a != null)
                     {
                         tokens.Add(a);
-                        tokens.Add(")");
                     }
-                }
-                else if (i == (userStr.Length - 1))
-                {
-                    if (userStr[i] != ')')
-                    {
-                        a += userStr[i].ToString();
-                        listNum.Add(a);
-                        tokens.Add(a);
-                    }
-                    else
-                    {
-                        tokens.Add(a);
-                        tokens.Add(")");
-                    }
+                    tokens.Add(userStr[i]);
+                    a = null;
                 }
                 else
                 {
-                    listNum.Add(a);
-                    tokens.Add(a);
-                    tokens.Add(userStr[i].ToString());
-                    a = "";
-                    listNum.Remove("");
-                    tokens.Remove("");
+                    a += userStr[i];
                 }
             }
-            var resultOp = String.Join(", ", listOp.ToArray());
-            var resultNum = String.Join(", ", listNum.ToArray());
-            var resultTokens = String.Join(", ", tokens.ToArray());
-            Console.WriteLine(resultOp);
-            Console.WriteLine(resultNum);
-            Console.WriteLine(resultTokens);
+            if (a != null)
+            {  
+                tokens.Add(a); 
+            }
+            Console.WriteLine("");
+            Console.WriteLine("Ответ:");
             RPNCalculator(RPNImport(tokens));
-
-            //Console.WriteLine(Calculate(listNum, listOp));
             Console.WriteLine();
         }
         static List<object> RPNImport(List<object> tokens)
@@ -124,10 +101,14 @@ namespace калькулятор
                                 RPN.Add(stackForOp.Pop());
                                 break;
                             }
+                            else if (OperationPriority[stackForOp.Peek().ToString()] == 0)
+                            {
+                                break;
+                            }
                             else
                             {
                                 RPN.Add(stackForOp.Pop());
-                            }
+                            }                            
                         }
                         stackForOp.Push(tokens[i]);
                     }
@@ -160,7 +141,8 @@ namespace калькулятор
                 {
                     if (elem == "^")
                     {
-                        double intermediateResult = Math.Pow(Convert.ToDouble(stackForResult.Pop()), Convert.ToDouble(stackForResult.Pop()));
+                        double a = Convert.ToDouble(stackForResult.Pop());
+                        double intermediateResult = Math.Pow(Convert.ToDouble(stackForResult.Pop()), a);
                         stackForResult.Push(intermediateResult);
                     }
                     else if (elem == "*")
