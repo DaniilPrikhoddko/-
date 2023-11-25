@@ -7,33 +7,50 @@ using System.Threading.Tasks;
 
 namespace калькулятор
 {
+    public class Parenthesis
+    {
+        public List<string> parnthesis;
+    }
+    public class Nubmer
+    {
+
+    }
+    public class Operation
+    {
+
+    }
+    public class Tokens
+    {
+        public static List<object> tokens;
+    }
     internal class Program
     {
         static void Main(string[] args)
         {
+            List<Parenthesis> parentheses = new List<Parenthesis>();
+            
 
             Console.WriteLine("Введите выражение:");
             string userStr = Console.ReadLine();
-
-            List<object> tokens = Tokenization(userStr);
-            PrintOutput(tokens);
+            List<Tokens> tokens = new List<Tokens>();  
+            Tokenize(userStr);
+            PrintOutput(Tokens.tokens);
             Console.WriteLine();
+            
         }
 
-        private static void PrintOutput(List<object> tokens)
+        private static void PrintOutput(List<Tokens> tokens)
         {
             Console.WriteLine("");
             Console.WriteLine("Ответ:");
-            RPNCalculator(RPNImport(tokens));
+            RPNCalculator(RPNImport(Tokens.tokens));
         }
 
-        private static List<object> Tokenization(string userStr)
+        private static void Tokenize(string userStr)
         {
             userStr = userStr.Replace(" ", "");
             string operators = "+-*/^()";
-            List<object> tokens = new List<object>();
             string a = null;
-
             for (int i = 0; i < userStr.Length; i++)
             {
                 if (Char.IsDigit(userStr[i]))
@@ -45,10 +62,10 @@ namespace калькулятор
                 {
                     if (a != null)
                     {
-                        tokens.Add(a);
+                        GetTokens().Add(a);
                     }
 
-                    tokens.Add(userStr[i]);
+                    GetTokens().Add(userStr[i]);
                     a = null;
                 }
 
@@ -61,13 +78,16 @@ namespace калькулятор
 
             if (a != null)
             {
-                tokens.Add(a);
+                GetTokens().Add(a);
             }
 
-            return tokens;
+            static List<object> GetTokens()
+            {
+                return Tokens.tokens;
+            }
         }
 
-        static List<object> RPNImport(List<object> tokens)
+        static List<object> RPNImport(List<Tokens> tokens)
         {
             Dictionary<string, int> OperationPriority = new Dictionary<string, int>()
             {
@@ -82,23 +102,23 @@ namespace калькулятор
 
             List<object> RPN = new List<object>();
             Stack<object> stackForOp = new Stack<object>();
-            for (int i = 0; i < tokens.Count; i++)
+            for (int i = 0; i < Tokens.tokens.Count; i++)
             {
-                if (float.TryParse(tokens[i].ToString(), out float n) == true)
+                if (float.TryParse(Tokens.tokens[i].ToString(), out float n) == true)
                 {
-                    RPN.Add(tokens[i]);
+                    RPN.Add(Tokens.tokens[i]);
                 }
 
-                else if (float.TryParse(tokens[i].ToString(),out float n1) == false)
+                else if (float.TryParse(Tokens.tokens[i].ToString(),out float n1) == false)
                 {
                     if (stackForOp.Count == 0
-                        || (OperationPriority[tokens[i].ToString()] > OperationPriority[stackForOp.Peek().ToString()])
-                        || (OperationPriority[tokens[i].ToString()] == 0))
+                        || (OperationPriority[Tokens.tokens[i].ToString()] > OperationPriority[stackForOp.Peek().ToString()])
+                        || (OperationPriority[Tokens.tokens[i].ToString()] == 0))
                     {
-                        stackForOp.Push(tokens[i]);
+                        stackForOp.Push(Tokens.tokens[i]);
                     }
 
-                    else if (OperationPriority[tokens[i].ToString()] == 1)
+                    else if (OperationPriority[Tokens.tokens[i].ToString()] == 1)
                     {
                         while (OperationPriority[stackForOp.Peek().ToString()] > 0)
                         {
@@ -108,11 +128,11 @@ namespace калькулятор
                         stackForOp.Pop();
                     }
 
-                    else if (OperationPriority[tokens[i].ToString()] <= OperationPriority[stackForOp.Peek().ToString()] && OperationPriority[tokens[i].ToString()] != 0)
+                    else if (OperationPriority[Tokens.tokens[i].ToString()] <= OperationPriority[stackForOp.Peek().ToString()] && OperationPriority[Tokens.tokens[i].ToString()] != 0)
                     {
                         while (stackForOp.Count > 0)
                         {
-                            if (OperationPriority[tokens[i].ToString()] == OperationPriority[stackForOp.Peek().ToString()])
+                            if (OperationPriority[Tokens.tokens[i].ToString()] == OperationPriority[stackForOp.Peek().ToString()])
                             {
                                 RPN.Add(stackForOp.Pop());
                                 break;
@@ -130,7 +150,7 @@ namespace калькулятор
                             
                         }
 
-                        stackForOp.Push(tokens[i]);
+                        stackForOp.Push(Tokens.tokens[i]);
                     }
                 
                 }
@@ -150,7 +170,7 @@ namespace калькулятор
             
         }
 
-        public static double RPNCalculator(List<object> RPN)
+        public static void RPNCalculator(List<object> RPN)
         {
             Stack<object> stackForResult = new Stack<object>();
 
@@ -195,7 +215,6 @@ namespace калькулятор
 
             double result = Convert.ToDouble(stackForResult.Pop());
             Console.WriteLine(result);
-            return result;
         }
 
         private static void Subtraction(Stack<object> stackForResult)
