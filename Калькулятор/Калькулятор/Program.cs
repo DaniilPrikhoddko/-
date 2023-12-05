@@ -5,122 +5,179 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace калькулятор
+using System.ComponentModel.Design;
+using System.Globalization;
+using System.Runtime.CompilerServices;
+
+namespace калькулятор_лаба_5
 {
-    public class Parenthesis
-    {
-        public List<string> parnthesis;
-    }
-    public class Nubmer
-    {
-
-    }
-    public class Operation
-    {
-
-    }
     public class Tokens
     {
-        public static List<object> tokens;
+
+    }
+    public class Parenthesis : Tokens
+    {
+        char parenthesis = ' ';
+        public bool itIsCloseParenthesis = false;
+        public bool itIsOpenParenthesis = false;
+        public Parenthesis(char i)
+        {
+            parenthesis = i;
+            if (i == ')')
+            {
+                itIsCloseParenthesis = true;
+            }
+            else
+            {
+                itIsOpenParenthesis = true;
+            }
+        }
+        public override string ToString()
+        {
+            return Convert.ToString(parenthesis);
+        }
+    }
+    public class Number : Tokens
+    {
+        public float number = 0;
+        public Number(float a)
+        {
+            number = a;
+        }
+        public override string ToString()
+        {
+            return Convert.ToString(number);
+        }
+    }
+    public class Operation : Tokens
+    {
+        public char operation = ' ';
+        public int priorityOfOperation = 0;
+        public Operation(char i)
+        {
+            operation = i;
+            priorityOfOperation = ConvertOperarionToPriority(i);
+
+        }
+        public override string ToString()
+        {
+            return Convert.ToString(operation);
+        }
+        public int ConvertOperarionToPriority(char i)
+        {
+            Dictionary<char, int> OperationPriority = new Dictionary<char, int>()
+            {
+                {'+', 2 },
+                {'-', 2 },
+                {'*', 3 },
+                {'/', 3 },
+                {'^', 4 },
+            };
+            return OperationPriority[i];
+        }
     }
     internal class Program
     {
+        public static List<Tokens> token = new List<Tokens>();
+        public static List<Tokens> RPN = new List<Tokens>();
+        public static float result = 0;
         static void Main(string[] args)
         {
-            List<Parenthesis> parentheses = new List<Parenthesis>();
-            
-
             Console.WriteLine("Введите выражение:");
             string userStr = Console.ReadLine();
-            List<Tokens> tokens = new List<Tokens>();  
-            Tokenize(userStr);
-            PrintOutput(Tokens.tokens);
-            Console.WriteLine();
-            
-        }
-
-        private static void PrintOutput(List<Tokens> tokens)
-        {
-            Console.WriteLine("");
-            Console.WriteLine("Ответ:");
-            RPNCalculator(RPNImport(Tokens.tokens));
-        }
-
-        private static void Tokenize(string userStr)
-        {
             userStr = userStr.Replace(" ", "");
-            string operators = "+-*/^()";
+            Tokenize(userStr);
+            RPNImport(token);
+            CalculateExpression(RPN);
+            Console.WriteLine("Ответ:");
+            Console.WriteLine(result);
+        }
+
+        public static void Tokenize(string userStr)
+        {
+
+            string operators = "+-*/^";
             string a = null;
-            for (int i = 0; i < userStr.Length; i++)
+            foreach (char i in userStr)
             {
-                if (Char.IsDigit(userStr[i]))
+                if (Char.IsDigit(i))
                 {
-                    a += userStr[i];
+                    a += i;
                 }
 
-                else if (operators.Contains(userStr[i]))
+                else if (operators.Contains(i))
                 {
                     if (a != null)
                     {
-                        GetTokens().Add(a);
+                        token.Add(new Number(float.Parse(a)));
+                        token.Add(new Operation(i));
+                        a = null;
+                    }
+                    else
+                    {
+                        token.Add(new Operation(i));
                     }
 
-                    GetTokens().Add(userStr[i]);
-                    a = null;
+                }
+                else if (i == '(' || i == ')')
+                {
+                    if (i == ')')
+                    {
+                        token.Add(new Number(float.Parse(a)));
+                        a = null;
+                    }
+
+                    token.Add(new Parenthesis(i));
+                }
+
+                else if (i == ',')
+                {
+                    a += i;
                 }
 
                 else
                 {
-                    a += userStr[i];
+                    Console.WriteLine("Ошибка: Недопустимое выражение");
                 }
 
             }
 
             if (a != null)
             {
-                GetTokens().Add(a);
+                token.Add(new Number(float.Parse(a)));
             }
 
-            static List<object> GetTokens()
-            {
-                return Tokens.tokens;
-            }
         }
 
-        static List<object> RPNImport(List<Tokens> tokens)
+        static void RPNImport(List<Tokens> token)
         {
-            Dictionary<string, int> OperationPriority = new Dictionary<string, int>()
+            Stack<Tokens> stackForOp = new Stack<Tokens>();
+            foreach (var tok in token)
             {
-                {"+", 2 },
-                {"-", 2 },
-                {"*", 3 },
-                {"/", 3 },
-                {"^", 4 },
-                {"(", 0 },
-                {")", 1 }
-            };
+                int priorityOfStackOperation = 0;
+                int currentPriorityOfOperation = 0;
 
-            List<object> RPN = new List<object>();
-            Stack<object> stackForOp = new Stack<object>();
-            for (int i = 0; i < Tokens.tokens.Count; i++)
-            {
-                if (float.TryParse(Tokens.tokens[i].ToString(), out float n) == true)
+
+                if (stackForOp.Count > 0 && stackForOp.Peek() is Operation)
                 {
-                    RPN.Add(Tokens.tokens[i]);
+                    priorityOfStackOperation = ((Operation)stackForOp.Peek()).priorityOfOperation;
                 }
 
-                else if (float.TryParse(Tokens.tokens[i].ToString(),out float n1) == false)
+                if (tok is Number number)
                 {
-                    if (stackForOp.Count == 0
-                        || (OperationPriority[Tokens.tokens[i].ToString()] > OperationPriority[stackForOp.Peek().ToString()])
-                        || (OperationPriority[Tokens.tokens[i].ToString()] == 0))
+                    RPN.Add(number);
+                }
+
+                else if (tok is Parenthesis parenthesis)
+                {
+                    if (parenthesis.itIsOpenParenthesis == true)
                     {
-                        stackForOp.Push(Tokens.tokens[i]);
+                        stackForOp.Push(parenthesis);
                     }
 
-                    else if (OperationPriority[Tokens.tokens[i].ToString()] == 1)
+                    else if (parenthesis.itIsCloseParenthesis == true)
                     {
-                        while (OperationPriority[stackForOp.Peek().ToString()] > 0)
+                        while (!(stackForOp.Peek() is Parenthesis))
                         {
                             RPN.Add(stackForOp.Pop());
                         }
@@ -128,36 +185,44 @@ namespace калькулятор
                         stackForOp.Pop();
                     }
 
-                    else if (OperationPriority[Tokens.tokens[i].ToString()] <= OperationPriority[stackForOp.Peek().ToString()] && OperationPriority[Tokens.tokens[i].ToString()] != 0)
+                }
+
+                else if (tok is Operation operation)
+                {
+                    currentPriorityOfOperation = operation.priorityOfOperation;
+                    // Случаи когда мы загружаем операции в стек
+                    if (stackForOp.Count == 0)
                     {
-                        while (stackForOp.Count > 0)
+                        stackForOp.Push(operation);
+                    }
+
+                    else if (currentPriorityOfOperation > priorityOfStackOperation)
+                    {
+                        stackForOp.Push(operation);
+                    }
+
+                    //Ситуации когда мы выгружаем стек
+                    else if (currentPriorityOfOperation <= priorityOfStackOperation)
+                    {
+                        while (currentPriorityOfOperation <= priorityOfStackOperation && stackForOp.Peek() is Operation)
                         {
-                            if (OperationPriority[Tokens.tokens[i].ToString()] == OperationPriority[stackForOp.Peek().ToString()])
+                            RPN.Add(stackForOp.Pop());
+                            if (stackForOp.Count != 0 && stackForOp.Peek() is Operation)
                             {
-                                RPN.Add(stackForOp.Pop());
-                                break;
+                                priorityOfStackOperation = ((Operation)stackForOp.Peek()).priorityOfOperation;
                             }
 
-                            else if (OperationPriority[stackForOp.Peek().ToString()] == 0)
-                            {
-                                break;
-                            }
-
-                            else
-                            {
-                                RPN.Add(stackForOp.Pop());
-                            } 
-                            
                         }
 
-                        stackForOp.Push(Tokens.tokens[i]);
+                        stackForOp.Push(operation);
                     }
-                
+
+
                 }
 
             }
 
-            if (stackForOp.Count > 0)
+            if (stackForOp.Count != 0)
             {
                 while (stackForOp.Count != 0)
                 {
@@ -166,86 +231,78 @@ namespace калькулятор
 
             }
 
-            return RPN;
-            
         }
 
-        public static void RPNCalculator(List<object> RPN)
+        public static void CalculateExpression(List<Tokens> RPN)
         {
-            Stack<object> stackForResult = new Stack<object>();
-
-            foreach (var item in RPN)
+            Stack<Tokens> stackForResult = new Stack<Tokens>();
+            foreach (var elem in RPN)
             {
-                string elem = Convert.ToString(item);
-                if (double.TryParse(elem, out var value))
+                if (elem is Number)
+                    stackForResult.Push(elem);
+                else if (elem is Operation operation)
                 {
-                    stackForResult.Push(value);
-                }
-
-                else
-                {
-                    if (elem == "^")
+                    if (operation.operation == '+')
                     {
-                        Exponentiation(stackForResult);
+                        AddNum(stackForResult);
                     }
 
-                    else if (elem == "*")
+                    else if (operation.operation == '-')
                     {
-                        Multiplication(stackForResult);
+                        SubtractNum(stackForResult);
                     }
 
-                    else if (elem == "/")
+                    else if (operation.operation == '*')
                     {
-                        Division(stackForResult);
+                        MultiplyNum(stackForResult);
                     }
 
-                    else if (elem == "+")
+                    else if (operation.operation == '/')
                     {
-                        Addition(stackForResult);
+                        DivideNum(stackForResult);
                     }
 
-                    else if (elem == "-")
+                    else if (operation.operation == '^')
                     {
-                        Subtraction(stackForResult);
+                        RaiseNumToPower(stackForResult);
                     }
 
                 }
 
-            } 
+            }
 
-            double result = Convert.ToDouble(stackForResult.Pop());
-            Console.WriteLine(result);
+            result = (float)((Number)stackForResult.Pop()).number;
         }
 
-        private static void Subtraction(Stack<object> stackForResult)
+        private static void RaiseNumToPower(Stack<Tokens> stackForResult)
         {
-            double intermediateResult = -(Convert.ToDouble(stackForResult.Pop()) - Convert.ToDouble(stackForResult.Pop()));
-            stackForResult.Push(intermediateResult);
+            float degree = ((Number)stackForResult.Pop()).number;
+            float exponentiation = (float)Math.Pow(((Number)stackForResult.Pop()).number, degree);
+            stackForResult.Push(new Number(exponentiation));
         }
 
-        private static void Addition(Stack<object> stackForResult)
+        private static void DivideNum(Stack<Tokens> stackForResult)
         {
-            double intermediateResult = Convert.ToDouble(stackForResult.Pop()) + Convert.ToDouble(stackForResult.Pop());
-            stackForResult.Push(intermediateResult);
+            float division = 1f / (((Number)stackForResult.Pop()).number / ((Number)stackForResult.Pop()).number);
+            stackForResult.Push(new Number(division));
         }
 
-        private static void Division(Stack<object> stackForResult)
+        private static void MultiplyNum(Stack<Tokens> stackForResult)
         {
-            double intermediateResult = 1f / (Convert.ToDouble(stackForResult.Pop()) / Convert.ToDouble(stackForResult.Pop()));
-            stackForResult.Push(intermediateResult);
+            float multiplication = ((Number)stackForResult.Pop()).number * ((Number)stackForResult.Pop()).number;
+            stackForResult.Push(new Number(multiplication));
         }
 
-        private static void Multiplication(Stack<object> stackForResult)
+        private static void SubtractNum(Stack<Tokens> stackForResult)
         {
-            double intermediateResult = Convert.ToDouble(stackForResult.Pop()) * Convert.ToDouble(stackForResult.Pop());
-            stackForResult.Push(intermediateResult);
+            float difference = -((Number)stackForResult.Pop()).number + ((Number)stackForResult.Pop()).number;
+            stackForResult.Push(new Number(difference));
         }
 
-        private static void Exponentiation(Stack<object> stackForResult)
+        private static void AddNum(Stack<Tokens> stackForResult)
         {
-            double a = Convert.ToDouble(stackForResult.Pop());
-            double intermediateResult = Math.Pow(Convert.ToDouble(stackForResult.Pop()), a);
-            stackForResult.Push(intermediateResult);
+            float sum = ((Number)stackForResult.Pop()).number + ((Number)stackForResult.Pop()).number;
+            stackForResult.Push(new Number(sum));
         }
 
     }
