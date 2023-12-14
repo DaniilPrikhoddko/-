@@ -204,7 +204,7 @@ namespace калькулятор_лаба_5
                     //Ситуации когда мы выгружаем стек
                     else if (currentPriorityOfOperation <= priorityOfStackOperation)
                     {
-                        while (currentPriorityOfOperation <= priorityOfStackOperation && stackForOp.Peek() is Operation)
+                        while (stackForOp.Count > 0 && currentPriorityOfOperation <= priorityOfStackOperation && stackForOp.Peek() is Operation)
                         {
                             RPN.Add(stackForOp.Pop());
                             if (stackForOp.Count != 0 && stackForOp.Peek() is Operation)
