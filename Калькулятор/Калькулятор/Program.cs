@@ -78,22 +78,22 @@ namespace калькулятор_лаба_5
     }
     internal class Program
     {
-        public static List<Tokens> token = new List<Tokens>();
-        public static List<Tokens> RPN = new List<Tokens>();
-        public static float result = 0;
         static void Main(string[] args)
         {
             Console.WriteLine("Введите выражение:");
             string userStr = Console.ReadLine();
             userStr = userStr.Replace(" ", "");
-            Tokenize(userStr);
-            RPNImport(token);
-            CalculateExpression(RPN);
+            List<Tokens> token = new List<Tokens>();
+            List<Tokens> RPN = new List<Tokens>();
+
+            Tokenize(userStr, ref token);
+            RPNImport(token, ref RPN);
+            float result = CalculateExpression(RPN);
             Console.WriteLine("Ответ:");
             Console.WriteLine(result);
         }
 
-        public static void Tokenize(string userStr)
+        public static void Tokenize(string userStr, ref List<Tokens> token)
         {
 
             string operators = "+-*/^";
@@ -149,7 +149,7 @@ namespace калькулятор_лаба_5
 
         }
 
-        static void RPNImport(List<Tokens> token)
+        static void RPNImport(List<Tokens> token, ref List<Tokens> RPN)
         {
             Stack<Tokens> stackForOp = new Stack<Tokens>();
             foreach (var tok in token)
@@ -233,8 +233,10 @@ namespace калькулятор_лаба_5
 
         }
 
-        public static void CalculateExpression(List<Tokens> RPN)
+        public static float CalculateExpression(List<Tokens> RPN)
         {
+            float result = 0;
+            float variable = 0;
             Stack<Tokens> stackForResult = new Stack<Tokens>();
             foreach (var elem in RPN)
             {
@@ -244,65 +246,67 @@ namespace калькулятор_лаба_5
                 {
                     if (operation.operation == '+')
                     {
-                        AddNum(stackForResult);
+                        variable = AddNum(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
                     }
 
                     else if (operation.operation == '-')
                     {
-                        SubtractNum(stackForResult);
+                        variable = SubtractNum(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
                     }
 
                     else if (operation.operation == '*')
                     {
-                        MultiplyNum(stackForResult);
+                        variable = MultiplyNum(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
                     }
 
                     else if (operation.operation == '/')
                     {
-                        DivideNum(stackForResult);
+                        variable = DivideNum(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);                       
                     }
 
                     else if (operation.operation == '^')
                     {
-                        RaiseNumToPower(stackForResult);
+                        variable = RaiseNumToPower(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
                     }
+                    stackForResult.Push((new Number(variable)));
 
                 }
 
             }
 
             result = (float)((Number)stackForResult.Pop()).number;
+            return result;
         }
 
-        private static void RaiseNumToPower(Stack<Tokens> stackForResult)
+        private static float RaiseNumToPower(float degree, float num)
         {
-            float degree = ((Number)stackForResult.Pop()).number;
-            float exponentiation = (float)Math.Pow(((Number)stackForResult.Pop()).number, degree);
-            stackForResult.Push(new Number(exponentiation));
+           
+            float exponentiation = (float)Math.Pow(num, degree);
+            return exponentiation;
         }
 
-        private static void DivideNum(Stack<Tokens> stackForResult)
+        private static float DivideNum(float divisor, float dividend)
         {
-            float division = 1f / (((Number)stackForResult.Pop()).number / ((Number)stackForResult.Pop()).number);
-            stackForResult.Push(new Number(division));
+            float quotient = dividend/divisor;
+            return quotient;
         }
 
-        private static void MultiplyNum(Stack<Tokens> stackForResult)
+        private static float MultiplyNum(float factor1, float factor2)
         {
-            float multiplication = ((Number)stackForResult.Pop()).number * ((Number)stackForResult.Pop()).number;
-            stackForResult.Push(new Number(multiplication));
+            float multiplication = factor1 * factor2;
+            return multiplication;
         }
 
-        private static void SubtractNum(Stack<Tokens> stackForResult)
+        private static float SubtractNum(float subtrahend, float minuend)
         {
-            float difference = -((Number)stackForResult.Pop()).number + ((Number)stackForResult.Pop()).number;
-            stackForResult.Push(new Number(difference));
+            float difference = minuend - subtrahend;
+            return difference;
         }
 
-        private static void AddNum(Stack<Tokens> stackForResult)
+        private static float AddNum(float term1, float term2)
         {
-            float sum = ((Number)stackForResult.Pop()).number + ((Number)stackForResult.Pop()).number;
-            stackForResult.Push(new Number(sum));
+            float sum = term1 + term2;
+            return sum;
         }
 
     }
