@@ -273,7 +273,6 @@ namespace калькулятор_лаба_5
                 }
 
             }
-
             result = (float)((Number)stackForResult.Pop()).number;
             return result;
         }
