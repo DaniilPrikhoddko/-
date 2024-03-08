@@ -1,11 +1,30 @@
 {
   "version": 3,
   "targets": {
-    "net7.0": {}
+    "net7.0": {
+      "Rpn.Entities/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v7.0",
+        "compile": {
+          "bin/placeholder/Rpn.Entities.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Rpn.Entities.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "Rpn.Entities/1.0.0": {
+      "type": "project",
+      "path": "../Rpn.Entities/Rpn.Entities.csproj",
+      "msbuildProject": "../Rpn.Entities/Rpn.Entities.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net7.0": []
+    "net7.0": [
+      "Rpn.Entities >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\Daniill\\.nuget\\packages\\": {},
@@ -14,9 +33,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Daniill\\Desktop\\калькулятор\\Калькулятор\\Калькулятор\\Калькулятор.csproj",
-      "projectName": "Калькулятор",
-      "projectPath": "C:\\Users\\Daniill\\Desktop\\калькулятор\\Калькулятор\\Калькулятор\\Калькулятор.csproj",
+      "projectUniqueName": "C:\\Users\\Daniill\\Desktop\\калькулятор\\Калькулятор\\Калькулятор\\Console.Calculator.csproj",
+      "projectName": "Console.Calculator",
+      "projectPath": "C:\\Users\\Daniill\\Desktop\\калькулятор\\Калькулятор\\Калькулятор\\Console.Calculator.csproj",
       "packagesPath": "C:\\Users\\Daniill\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\Daniill\\Desktop\\калькулятор\\Калькулятор\\Калькулятор\\obj\\",
       "projectStyle": "PackageReference",
@@ -38,7 +57,11 @@
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\Daniill\\Desktop\\калькулятор\\Калькулятор\\Rpn.Entities\\Rpn.Entities.csproj": {
+              "projectPath": "C:\\Users\\Daniill\\Desktop\\калькулятор\\Калькулятор\\Rpn.Entities\\Rpn.Entities.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
