@@ -21,9 +21,10 @@ namespace CalculatorX
         {
             InitializeComponent();
         }
-        private void buttonClick(object sender, RoutedEventArgs e)
+        private void btnStart(object sender, RoutedEventArgs e)
         {
-            resultLabel.Content = new RpnCalculator(expressionBox.Text).Calculate();
+            float valueOfVariable = float.Parse(tbVariableValue.Text);
+            lblResult.Content = new RpnCalculator(tbExpression.Text).Calculate(valueOfVariable);
         }
     }
 }

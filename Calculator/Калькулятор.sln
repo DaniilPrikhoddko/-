@@ -5,7 +5,7 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console.Calculator", "Калькулятор\Console.Calculator.csproj", "{C59F2266-A295-4F7E-AEC9-14E126F90846}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator.Wpf", "..\CalculatorX\Calculator.Wpf.csproj", "{04D415FA-4632-4DD4-9E87-257E0A0A7917}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator.Wpf", "CalculatorX\Calculator.Wpf.csproj", "{04D415FA-4632-4DD4-9E87-257E0A0A7917}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rpn.Entities", "Rpn.Entities\Rpn.Entities.csproj", "{52FFACF0-24BF-4BB0-80EC-992CF0C48BED}"
 EndProject

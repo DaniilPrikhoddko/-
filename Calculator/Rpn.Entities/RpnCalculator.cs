@@ -19,13 +19,35 @@ namespace RPNCalc
             userStr = userStr.Replace(" ", "");
             string operators = "+-*/^";
             string a = null;
+            string nameOfMathOp = null;
+            int count = 0;
             foreach (char i in userStr)
             {
                 if (Char.IsDigit(i))
                 {
+                    if (token.Count>0 && count == 0 && token.Last() is Variable)
+                    {
+                        token.Add(new Operation('*'));
+                    }
                     a += i;
+                    count++;
                 }
+                else if (Char.IsLetter(i))
+                {
+                    nameOfMathOp += i;
+                }
+                else if (Char.IsLetter(i))
+                {
 
+                    token.Add(new Number(float.Parse(a)));
+                    a = null;
+                    count = 0;
+                    if (token.Count > 0 && token.Last() is Number)
+                    {
+                        token.Add(new Operation('*'));
+                    }
+                    token.Add(new Variable(i));
+                }
                 else if (operators.Contains(i))
                 {
                     if (a != null)
@@ -33,6 +55,7 @@ namespace RPNCalc
                         token.Add(new Number(float.Parse(a)));
                         token.Add(new Operation(i));
                         a = null;
+                        count = 0;
                     }
                     else
                     {
@@ -46,6 +69,7 @@ namespace RPNCalc
                     {
                         token.Add(new Number(float.Parse(a)));
                         a = null;
+                        count = 0;
                     }
 
                     token.Add(new Parenthesis(i));
@@ -87,6 +111,10 @@ namespace RPNCalc
                 if (tok is Number number)
                 {
                     RPN.Add(number);
+                }
+                else if (tok is Variable variable)
+                {
+                    RPN.Add(variable);
                 }
 
                 else if (tok is Parenthesis parenthesis)
@@ -154,42 +182,49 @@ namespace RPNCalc
 
         }
 
-        public static float CalculateExpression(List<Tokens> RPN)
+        public static float CalculateExpression(List<Tokens> RPN, float valueOfVariable)
         {
             float result = 0;
-            float variable = 0;
+            float intermediateValue = 0;
             Stack<Tokens> stackForResult = new Stack<Tokens>();
             foreach (var elem in RPN)
             {
                 if (elem is Number)
+                {
                     stackForResult.Push(elem);
+                }
+                else if (elem is Variable variable)
+                {
+                    stackForResult.Push(new Number(valueOfVariable));
+                }
+
                 else if (elem is Operation operation)
                 {
                     if (operation.operation == '+')
                     {
-                        variable = AddNum(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
+                        intermediateValue = AddNum(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
                     }
 
                     else if (operation.operation == '-')
                     {
-                        variable = SubtractNum(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
+                        intermediateValue = SubtractNum(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
                     }
 
                     else if (operation.operation == '*')
                     {
-                        variable = MultiplyNum(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
+                        intermediateValue = MultiplyNum(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
                     }
 
                     else if (operation.operation == '/')
                     {
-                        variable = DivideNum(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
+                        intermediateValue = DivideNum(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
                     }
 
                     else if (operation.operation == '^')
                     {
-                        variable = RaiseNumToPower(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
+                        intermediateValue = RaiseNumToPower(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
                     }
-                    stackForResult.Push((new Number(variable)));
+                    stackForResult.Push((new Number(intermediateValue)));
 
                 }
 
@@ -228,14 +263,14 @@ namespace RPNCalc
             float sum = term1 + term2;
             return sum;
         }
-        public float Calculate()
+        public float Calculate(float valueOfVariable)
         {
             List<Tokens> token = new List<Tokens>();
             List<Tokens> RPN = new List<Tokens>();
 
             Tokenize(userInput, ref token);
             RPNImport(token, ref RPN);
-            float result = CalculateExpression(RPN);
+            float result = CalculateExpression(RPN, valueOfVariable);
             return result;
         }
         public RpnCalculator(string userStr)
@@ -243,10 +278,22 @@ namespace RPNCalc
             userInput = userStr;
         }
     }
-
+    
     public class Tokens
     {
 
+    }
+    public class Variable : Tokens
+    {
+        public char variableName { get; set;}
+        public Variable(char name)
+        {
+            variableName = name;
+        }
+        public override string ToString()
+        {
+            return Convert.ToString(variableName);
+        }
     }
     public class Parenthesis : Tokens
     {

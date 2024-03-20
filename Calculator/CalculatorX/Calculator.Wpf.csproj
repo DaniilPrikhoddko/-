@@ -9,8 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Calculator\Rpn.Entities\Rpn.Entities.csproj" />
-    <ProjectReference Include="..\Калькулятор\Rpn.Entities\Rpn.Entities.csproj" />
+    <ProjectReference Include="..\Rpn.Entities\Rpn.Entities.csproj" />
   </ItemGroup>
 
 </Project>

@@ -17,8 +17,10 @@ namespace RPNCalc
         {
             Console.WriteLine("Введите выражение:");
             string userInput = Console.ReadLine();
+            Console.WriteLine("Введите значение переменной");
+            float valueOfVariable = float.Parse(Console.ReadLine());
             var rpn = new RpnCalculator(userInput);
-            float result = rpn.Calculate();
+            float result = rpn.Calculate(valueOfVariable);
             Console.WriteLine("Ответ:");
             Console.WriteLine(result);
         }
