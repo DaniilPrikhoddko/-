@@ -18,66 +18,73 @@ namespace RPNCalc
         {
             userStr = userStr.Replace(" ", "");
             string operators = "+-*/^";
-            string a = null;
-            string nameOfMathOp = null;
-            int count = 0;
+            string numbersStr = null;
+            string lettersStr = string.Empty;
             foreach (char i in userStr)
             {
                 if (Char.IsDigit(i))
                 {
-                    if (token.Count>0 && count == 0 && token.Last() is Variable)
+                    if (lettersStr.Length == 1)
                     {
+                        token.Add(new Variable(Convert.ToChar(lettersStr)));
+                        lettersStr = string.Empty;
                         token.Add(new Operation('*'));
-                    }
-                    a += i;
-                    count++;
-                }
-                else if (Char.IsLetter(i))
-                {
-                    nameOfMathOp += i;
-                }
-                else if (Char.IsLetter(i))
-                {
+                    } 
+                    numbersStr += i;
 
-                    token.Add(new Number(float.Parse(a)));
-                    a = null;
-                    count = 0;
-                    if (token.Count > 0 && token.Last() is Number)
-                    {
-                        token.Add(new Operation('*'));
-                    }
-                    token.Add(new Variable(i));
                 }
+                else if (Char.IsLetter(i))
+                {
+                    lettersStr += i;
+                }
+
                 else if (operators.Contains(i))
                 {
-                    if (a != null)
+                    if (numbersStr != null)
                     {
-                        token.Add(new Number(float.Parse(a)));
-                        token.Add(new Operation(i));
-                        a = null;
-                        count = 0;
+                        token.Add(new Number(numbersStr));  
+                        numbersStr = null;
                     }
-                    else
-                    {
-                        token.Add(new Operation(i));
-                    }
+                    token.Add(new Operation(i));
 
                 }
                 else if (i == '(' || i == ')')
                 {
-                    if (i == ')')
+                    if (i == '(')
                     {
-                        token.Add(new Number(float.Parse(a)));
-                        a = null;
-                        count = 0;
+                        if(lettersStr.Length > 0)
+                        {
+                            token.Add(new Operation(lettersStr));
+                        }
                     }
-
+                    else
+                    {
+                        lettersStr = string.Empty;
+                        token.Add(new Number(numbersStr));
+                        numbersStr = null;
+                    }
+                    //if (lettersStr == null || !(token.Count > 0 && token.Last() is Operation))
+                    //{
+                    //    token.Add(new Parenthesis(i));
+                    //}
                     token.Add(new Parenthesis(i));
+
                 }
 
                 else if (i == ',')
                 {
-                    a += i;
+                    if (lettersStr.Length >0)
+                    {
+                        token.Add(new Number(numbersStr));
+                        token.Add(new Delimiter(','));
+                        numbersStr = null;
+                    }
+
+                    else
+                    {
+                        numbersStr += i;
+                    }
+                    
                 }
 
                 else
@@ -87,9 +94,9 @@ namespace RPNCalc
 
             }
 
-            if (a != null)
+            if (numbersStr != null)
             {
-                token.Add(new Number(float.Parse(a)));
+                token.Add(new Number(numbersStr));
             }
 
         }
@@ -107,11 +114,25 @@ namespace RPNCalc
                 {
                     priorityOfStackOperation = ((Operation)stackForOp.Peek()).priorityOfOperation;
                 }
-
+                
                 if (tok is Number number)
                 {
                     RPN.Add(number);
                 }
+
+                else if (tok is Delimiter)
+                {
+                    while (stackForOp.Count > 0 && stackForOp.Peek() is Operation)
+                    {
+                        RPN.Add(stackForOp.Pop());
+                        if (stackForOp.Count != 0 && stackForOp.Peek() is Operation)
+                        {
+                            priorityOfStackOperation = ((Operation)stackForOp.Peek()).priorityOfOperation;
+                        }
+
+                    }
+                }
+
                 else if (tok is Variable variable)
                 {
                     RPN.Add(variable);
@@ -200,7 +221,12 @@ namespace RPNCalc
 
                 else if (elem is Operation operation)
                 {
-                    if (operation.operation == '+')
+                    if (operation.nameOfMathOperation == "log")
+                    {
+                        intermediateValue = (float)(1/Math.Log(((Number)stackForResult.Pop()).number) * Math.Log(((Number)stackForResult.Pop()).number));
+                    }
+
+                    else if (operation.operation == '+')
                     {
                         intermediateValue = AddNum(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
                     }
@@ -320,28 +346,53 @@ namespace RPNCalc
     public class Number : Tokens
     {
         public float number = 0;
-        public Number(float a)
+        public Number(string a)
         {
-            number = a;
+            number = float.Parse(a);
+        }
+        public Number(float num)
+        {
+            number = num;
         }
         public override string ToString()
         {
             return Convert.ToString(number);
         }
     }
+    public class Delimiter : Tokens
+    {
+        public char delimiter = ' ';
+        public Delimiter(char i)
+        {
+            delimiter = i;
+        }
+    }
     public class Operation : Tokens
     {
         public char operation = ' ';
         public int priorityOfOperation = 0;
+        public string nameOfMathOperation = null;
         public Operation(char i)
         {
             operation = i;
             priorityOfOperation = ConvertOperarionToPriority(i);
 
         }
+        public Operation(string i)
+        {
+            nameOfMathOperation = i;
+            priorityOfOperation = 5;
+        }
         public override string ToString()
         {
-            return Convert.ToString(operation);
+            if (nameOfMathOperation == null)
+            {
+                return Convert.ToString(operation);
+            }
+            else
+            {
+                return Convert.ToString(nameOfMathOperation);
+            }   
         }
         public int ConvertOperarionToPriority(char i)
         {
