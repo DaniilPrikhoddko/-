@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.Design;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RPNCalc
 {
@@ -17,6 +18,7 @@ namespace RPNCalc
         public static void Tokenize(string userStr, ref List<Tokens> token)
         {
             userStr = userStr.Replace(" ", "");
+            userStr = userStr.ToLower();
             string operators = "+-*/^";
             string numbersStr = null;
             string lettersStr = string.Empty;
@@ -221,7 +223,47 @@ namespace RPNCalc
 
                 else if (elem is Operation operation)
                 {
-                    if (operation.nameOfMathOperation == "log")
+                    string[] cotangentOperationNames = new string[] { "ctg", "cotg", "cotan", "ctan" };
+                    string[] tangentOperationNames = new string[] { "tg", "tan" };
+                    string[] rootOperationNames = new string[] { "rt", "root" };
+
+                    if (rootOperationNames.Any(x => x.Equals(operation.nameOfMathOperation, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        float power = ((Number)stackForResult.Pop()).number;
+                        intermediateValue = (float) Math.Pow(((Number)stackForResult.Pop()).number, 1 / power);
+                    }
+
+                    else if (operation.nameOfMathOperation == "cbrt")
+                    {
+                        intermediateValue = (float)Math.Cbrt(((Number)stackForResult.Pop()).number);
+                    }
+
+                    else if (operation.nameOfMathOperation == "sqrt")
+                    {
+                        intermediateValue = (float) Math.Sqrt(((Number)stackForResult.Pop()).number);
+                    }
+
+                    else if (cotangentOperationNames.Any(x => x.Equals(operation.nameOfMathOperation, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        intermediateValue = 1/(float)Math.Tan(((Number)stackForResult.Pop()).number);
+                    }
+
+                    else if (tangentOperationNames.Any(x => x.Equals(operation.nameOfMathOperation, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        intermediateValue = (float)Math.Tan(((Number)stackForResult.Pop()).number);
+                    }
+
+                    else if (operation.nameOfMathOperation == "cos")
+                    {
+                        intermediateValue = (float)Math.Cos(((Number)stackForResult.Pop()).number);
+                    }
+
+                    else if (operation.nameOfMathOperation == "sin")
+                    {
+                        intermediateValue = (float)Math.Sin(((Number)stackForResult.Pop()).number);
+                    }
+
+                    else if (operation.nameOfMathOperation == "log")
                     {
                         intermediateValue = (float)(1/Math.Log(((Number)stackForResult.Pop()).number) * Math.Log(((Number)stackForResult.Pop()).number));
                     }
