@@ -5,16 +5,26 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CalculatorX"
         mc:Ignorable="d"
-        Title="Calculator" Height="413" Width="436">
-    <Grid Margin="0,0,0,0
-          " Background="#FFEDE8E8">
-        <Button x:Name="btnGetResult" IsDefault="True" Click="btnStart" Content="вычислить выражение" HorizontalAlignment="Center" Height="50" Margin="0,311,0,0" VerticalAlignment="Top" Width="380" BorderBrush="#FFCE2E2E" Background="White" FontSize="20" FontFamily="Arial" Foreground="#FF2F0909" BorderThickness="3,3,3,3" FontWeight="Bold"/>
-        <TextBox x:Name="tbExpression" HorizontalAlignment="Center" Height="47" TextWrapping="Wrap" VerticalAlignment="Top" Width="380" FontSize="20" Margin="0,44,0,0" TextAlignment="Center"/>
-        <Label x:Name="lblResult" Content="" HorizontalAlignment="Center" Height="42" Margin="0,237,0,0" VerticalAlignment="Top" Width="380" FontSize="20" HorizontalContentAlignment="Center"/>
-        <TextBox x:Name="tbVariableValue" HorizontalAlignment="Center" Height="47" Margin="0,137,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="380" FontSize="20" TextAlignment="Center"/>
-        <TextBlock HorizontalAlignment="Center" Margin="0,7,0,0" TextWrapping="Wrap" Text="Введите выражение:" VerticalAlignment="Top" Height="32" Width="211" FontSize="20" TextAlignment="Center"/>
-        <TextBlock HorizontalAlignment="Center" Margin="0,97,0,0" TextWrapping="Wrap" Text="Введите значение переменной" VerticalAlignment="Top" Height="35" Width="350" FontSize="20" TextAlignment="Center"/>
-        <TextBlock HorizontalAlignment="Center" Height="36" Margin="0,201,0,0" TextWrapping="Wrap" Text="Ответ:" VerticalAlignment="Top" Width="282" TextAlignment="Center" FontSize="20"/>
+        Title="Calculator" Height="432" Width="1116">
+    <Grid Margin="0,0,0,-6" Background="#FFEDE8E8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="207*"/>
+            <RowDefinition Height="215*"/>
+        </Grid.RowDefinitions>
+        <Button x:Name="btnGetResult" IsDefault="True" Click="btnStart" Content="вычислить выражение" HorizontalAlignment="Left" Height="40" Margin="800,152,0,0" VerticalAlignment="Top" Width="294" BorderBrush="#FFCE2E2E" Background="White" FontSize="20" FontFamily="Arial" Foreground="#FF2F0909" BorderThickness="3,3,3,3" FontWeight="Bold" Grid.Row="1"/>
+        <TextBox x:Name="tbExpression" HorizontalAlignment="Left" Height="28" TextWrapping="Wrap" VerticalAlignment="Top" Width="294" FontSize="16" Margin="800,40,0,0" TextAlignment="Center"/>
+        <TextBox x:Name="tbVariableValue" HorizontalAlignment="Left" Height="28" Margin="800,113,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="294" FontSize="16" TextAlignment="Center"/>
+        <TextBlock HorizontalAlignment="Left" Margin="841,8,0,0" TextWrapping="Wrap" Text="Введите выражение:" VerticalAlignment="Top" Height="32" Width="212" FontSize="16" TextAlignment="Center"/>
+        <TextBlock HorizontalAlignment="Left" Margin="772,78,0,0" TextWrapping="Wrap" Text="Введите значение переменной" VerticalAlignment="Top" Height="35" Width="350" FontSize="16" TextAlignment="Center"/>
+        <TextBlock HorizontalAlignment="Left" Height="34" Margin="814,149,0,0" TextWrapping="Wrap" Text="Начало" VerticalAlignment="Top" Width="266" FontSize="16" TextAlignment="Center"/>
+        <TextBox x:Name="tbStartPosition" HorizontalAlignment="Left" Height="28" Margin="800,183,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="294" FontSize="16" TextAlignment="Center" Grid.RowSpan="2"/>
+        <TextBlock HorizontalAlignment="Left" Height="30" Margin="826,10,0,0" Grid.Row="1" TextWrapping="Wrap" Text="Конец" VerticalAlignment="Top" Width="242" FontSize="16" TextAlignment="Center"/>
+        <TextBox x:Name="tbFinishPosition" HorizontalAlignment="Left" Height="28" Margin="800,46,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="294" FontSize="16" TextAlignment="Center" Grid.Row="1"/>
+        <Canvas x:Name="cForGraphic" Margin="35,24,379,94" Grid.RowSpan="2" Background="White" MouseMove="cForGraphic_MouseMove" Loaded="cForGraphic_Loaded" ClipToBounds="True"/>
+        <TextBlock HorizontalAlignment="Left" Height="29" Margin="800,79,0,0" Grid.Row="1" TextWrapping="Wrap" Text="Шаг" VerticalAlignment="Top" Width="294" FontSize="16" TextAlignment="Center"/>
+        <TextBox x:Name="tbZoom" HorizontalAlignment="Left" Margin="800,108,0,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Width="294" Height="28" TextChanged="TextBox_TextChanged" FontSize="16" TextAlignment="Center"/>
+        <Label x:Name="lblUiCoordinates" Content="" HorizontalAlignment="Left" Margin="35,159,0,0" Grid.Row="1" VerticalAlignment="Top" Width="246" FontSize="16" HorizontalContentAlignment="Center"/>
+        <Label x:Name="lblMathCoordinates" Content="" HorizontalAlignment="Left" Margin="312,159,0,0" Grid.Row="1" VerticalAlignment="Top" Width="246" FontSize="16" HorizontalContentAlignment="Center"/>
 
     </Grid>
 </Window>
