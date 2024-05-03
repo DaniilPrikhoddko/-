@@ -47,23 +47,41 @@ namespace RPNCalc
                         token.Add(new Number(numbersStr));  
                         numbersStr = null;
                     }
+                    if (lettersStr != string.Empty)
+                    {
+                        if (lettersStr.Length == 1)
+                        {
+                            token.Add(new Variable(Convert.ToChar(lettersStr)));
+                        }
+                        else
+                        {
+                            token.Add(new Operation(lettersStr));
+                        }
+                        lettersStr = string.Empty;
+
+                    }
                     token.Add(new Operation(i));
 
                 }
                 else if (i == '(' || i == ')')
                 {
-                    if (i == '(')
+
+                    if (numbersStr != null)
                     {
-                        if(lettersStr.Length > 0)
+                        token.Add(new Number(numbersStr));
+                        numbersStr = null;
+                    }
+                    else if (lettersStr != string.Empty)
+                    {
+                        if (lettersStr.Length == 1)
+                        {
+                            token.Add(new Variable(Convert.ToChar(lettersStr)));
+                        }
+                        else
                         {
                             token.Add(new Operation(lettersStr));
                         }
-                    }
-                    else
-                    {
                         lettersStr = string.Empty;
-                        token.Add(new Number(numbersStr));
-                        numbersStr = null;
                     }
                     //if (lettersStr == null || !(token.Count > 0 && token.Last() is Operation))
                     //{
@@ -73,12 +91,26 @@ namespace RPNCalc
 
                 }
 
-                else if (i == ',')
+                else if (i == ';')
                 {
                     if (lettersStr.Length >0)
                     {
+                        if (lettersStr.Length == 1)
+                        {
+                            token.Add(new Variable(Convert.ToChar(lettersStr)));
+                        }
+                        else
+                        {
+                            token.Add(new Operation(lettersStr));
+                        }
+                        lettersStr = string.Empty; 
+                        token.Add(new Delimiter(i));    
+                    }
+
+                    else if (numbersStr.Length > 0)
+                    {
                         token.Add(new Number(numbersStr));
-                        token.Add(new Delimiter(','));
+                        token.Add(new Delimiter(i));
                         numbersStr = null;
                     }
 
@@ -99,6 +131,18 @@ namespace RPNCalc
             if (numbersStr != null)
             {
                 token.Add(new Number(numbersStr));
+            }
+            else if (lettersStr != string.Empty)
+            {
+                if (lettersStr.Length == 1)
+                {
+                    token.Add(new Variable(Convert.ToChar(lettersStr)));
+                }
+                else
+                {
+                    token.Add(new Operation(lettersStr));
+                }
+                lettersStr = string.Empty;
             }
 
         }
