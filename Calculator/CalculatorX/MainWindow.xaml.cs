@@ -19,7 +19,7 @@ namespace CalculatorX
     {
         public static Point ToMathCoordinates(this Point point, Canvas canvas, float zoom)
         {
-            return new Point((point.X - canvas.ActualWidth / 2) / zoom, (point.Y - canvas.ActualHeight / 2) / zoom);
+            return new Point((point.X - canvas.ActualWidth / 2) / zoom, -(point.Y - canvas.ActualHeight / 2) / zoom);
         }
 
         public static Point ToUiCoordinates(this Point point, Canvas canvas, float zoom)
@@ -162,37 +162,45 @@ namespace CalculatorX
 
         private void cForGraphic_Loaded(object sender, RoutedEventArgs e)
         {
-            var canvasDrawer = new CanvasDrawer(cForGraphic, -35, 33, 1, 10);
+            CanvasDrawer canvasDrawer = new CanvasDrawer(cForGraphic, -35, 33, 1, 10);
             canvasDrawer.DrawAxis();
             canvasDrawer.DrawMarks();
             canvasDrawer.DrawTriangle();
         }
         private void btnStart(object sender, RoutedEventArgs e)
         {
-            cForGraphic.Children.Clear();
-            RedrawCanvas();
+            //cForGraphic.Children.Clear();
+            //RedrawCanvas(10);
             //float valueOfVariable = float.Parse(tbVariableValue.Text);
             //lblResult.Content = new RpnCalculator(tbExpression.Text).Calculate(valueOfVariable);
         }
         private void cForGraphic_MouseMove(object sender, MouseEventArgs e)
         {
             Point uiPoint = Mouse.GetPosition(cForGraphic);
-            float zoom = 1;
-            if (!(String.IsNullOrEmpty(tbZoom.Text)))
-            {
-                zoom = float.Parse(tbZoom.Text);
-            }
+            float zoom = (float)sZoom.Value;           
             var mathPoint = Mouse.GetPosition(cForGraphic).ToMathCoordinates(cForGraphic, zoom);
             lblUiCoordinates.Content = $"{uiPoint.X:0.#},{uiPoint.Y:0.#}";
             lblMathCoordinates.Content = $"{mathPoint.X:0.#},{mathPoint.Y:0.#}";
         }
-    
-        private void RedrawCanvas()
+        private void sZoom_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            ((Slider)sender).Value = e.NewValue;
+            float zoom = (float)e.NewValue;
+            cForGraphic.Children.Clear();
+            if (! (string.IsNullOrEmpty(tbExpression.Text) && string.IsNullOrEmpty(tbFinishPosition.Text) && string.IsNullOrEmpty(tbStartPosition.Text) && string.IsNullOrEmpty(tbStep.Text)))
+            {
+                RedrawCanvas(zoom);
+                lblZoom.Content = (int) zoom;
+            }
+
+        }
+
+        private void RedrawCanvas(float zoom1)
         {
             float start = float.Parse(tbStartPosition.Text);
             float end = float.Parse(tbFinishPosition.Text);
-            float zoom = float.Parse(tbZoom.Text);
             float step = float.Parse(tbStep.Text);
+            float zoom = zoom1;
 
             CanvasDrawer canvasDrawer = new CanvasDrawer(cForGraphic, start, end, step, zoom);
             canvasDrawer.DrawAxis();
