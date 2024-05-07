@@ -182,25 +182,39 @@ namespace CalculatorX
             lblUiCoordinates.Content = $"{uiPoint.X:0.#},{uiPoint.Y:0.#}";
             lblMathCoordinates.Content = $"{mathPoint.X:0.#},{mathPoint.Y:0.#}";
         }
+
+        private void sStep_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            ((Slider)sender).Value = e.NewValue;
+            cForGraphic.Children.Clear();
+            if (!(string.IsNullOrEmpty(tbExpression.Text) && string.IsNullOrEmpty(tbFinishPosition.Text) && string.IsNullOrEmpty(tbStartPosition.Text)))
+            {
+                RedrawCanvas();
+                lblStep.Content = (float) sStep.Value;
+            }
+        }
         private void sZoom_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             ((Slider)sender).Value = e.NewValue;
-            float zoom = (float)e.NewValue;
-            cForGraphic.Children.Clear();
-            if (! (string.IsNullOrEmpty(tbExpression.Text) && string.IsNullOrEmpty(tbFinishPosition.Text) && string.IsNullOrEmpty(tbStartPosition.Text) && string.IsNullOrEmpty(tbStep.Text)))
+            if (sZoom.Value != 0 && sStep != null)
             {
-                RedrawCanvas(zoom);
-                lblZoom.Content = (int) zoom;
+                sStep.Value = 1 / sZoom.Value * 10;
+            }
+            cForGraphic.Children.Clear();
+            if (! (string.IsNullOrEmpty(tbExpression.Text) && string.IsNullOrEmpty(tbFinishPosition.Text) && string.IsNullOrEmpty(tbStartPosition.Text)))
+            {
+                RedrawCanvas();
+                lblZoom.Content = (int) sZoom.Value;
             }
 
         }
 
-        private void RedrawCanvas(float zoom1)
+        private void RedrawCanvas()
         {
             float start = float.Parse(tbStartPosition.Text);
             float end = float.Parse(tbFinishPosition.Text);
-            float step = float.Parse(tbStep.Text);
-            float zoom = zoom1;
+            float step = (float) sStep.Value;
+            float zoom = (float) sZoom.Value;
 
             CanvasDrawer canvasDrawer = new CanvasDrawer(cForGraphic, start, end, step, zoom);
             canvasDrawer.DrawAxis();
