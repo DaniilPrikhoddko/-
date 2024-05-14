@@ -90,7 +90,14 @@ namespace RPNCalc
                     token.Add(new Parenthesis(i));
 
                 }
-
+                else if (i == ',')
+                {
+                    numbersStr += ",";
+                }
+                else if (i == '.')
+                {
+                    numbersStr += ",";
+                }
                 else if (i == ';')
                 {
                     if (lettersStr.Length >0)

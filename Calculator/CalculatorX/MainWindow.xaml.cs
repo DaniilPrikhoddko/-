@@ -2,6 +2,7 @@
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -30,9 +31,9 @@ namespace CalculatorX
     class CanvasDrawer
     {
         private Canvas _canvas;
-        private double _axisThickness = 1;
-        private Brush _defaultStroke = Brushes.Black;
-        private int _scaleLength = 5;
+        //private double _axisThickness = 1;
+        //private Brush _defaultStroke = Brushes.Black;
+        //private int _scaleLength = 5;
 
         Point xAxisStart;
         Point xAxisEnd;
@@ -43,19 +44,26 @@ namespace CalculatorX
         private readonly float _xEnd;
         private readonly float _step;
         private readonly float _zoom;
-        public CanvasDrawer(Canvas canvas, float xStart, float xEnd, float step, float zoom)
+        private readonly float _xAxisDisplacement;
+        private readonly float _yAxisDisplacement;
+
+        public CanvasDrawer(Canvas canvas, float xStart, float xEnd, float step, float zoom, float xAxisDisplacement, float yAxisDisplacement)
         {
-            _canvas = canvas;
-            xAxisStart = new Point((int)_canvas.ActualWidth / 2, 0);
-            xAxisEnd = new Point((int)_canvas.ActualWidth / 2, (int)_canvas.ActualHeight);
-            yAxisStart = new Point(0, (int)_canvas.ActualHeight / 2);
-            yAxisEnd = new Point((int)_canvas.ActualWidth, (int)_canvas.ActualHeight / 2);
-
-
             _xStart = xStart;
             _xEnd = xEnd;
             _step = step;
             _zoom = zoom;
+            _xAxisDisplacement = xAxisDisplacement;
+            _yAxisDisplacement = yAxisDisplacement;
+            _canvas = canvas;
+
+            yAxisStart = new Point((int)_canvas.ActualWidth / 2 - _xAxisDisplacement, 0 - yAxisDisplacement);
+            yAxisEnd = new Point((int)_canvas.ActualWidth / 2 - _xAxisDisplacement, (int)_canvas.ActualHeight - yAxisDisplacement);
+            xAxisStart = new Point(0 - _xAxisDisplacement, (int)_canvas.ActualHeight / 2 - yAxisDisplacement);
+            xAxisEnd = new Point((int)_canvas.ActualWidth - _xAxisDisplacement, (int)_canvas.ActualHeight / 2 - yAxisDisplacement);
+
+
+           
         }
 
         public void DrawLine(Point start, Point end, Color color, int thickness)
@@ -92,10 +100,10 @@ namespace CalculatorX
         {
             for (float i=0; i<= _xEnd; i+=_step) //ось иксов
             {
-                Point p1 = new Point((float) _canvas.ActualWidth/2 + i*_zoom, (float) _canvas.ActualHeight/2 - 6);
-                Point p2 = new Point((float)_canvas.ActualWidth / 2 + i*_zoom, (float)_canvas.ActualHeight / 2 + 6);
-                Point p3 = new Point((float)_canvas.ActualWidth / 2 - i * _zoom, (float)_canvas.ActualHeight / 2 - 6);
-                Point p4 = new Point((float)_canvas.ActualWidth / 2 - i * _zoom, (float)_canvas.ActualHeight / 2 + 6);
+                Point p1 = new Point((float)_canvas.ActualWidth / 2 + i * _zoom - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 - 6 - _yAxisDisplacement);
+                Point p2 = new Point((float)_canvas.ActualWidth / 2 + i * _zoom - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 + 6 - _yAxisDisplacement);
+                Point p3 = new Point((float)_canvas.ActualWidth / 2 - i * _zoom - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 - 6 - _yAxisDisplacement);
+                Point p4 = new Point((float)_canvas.ActualWidth / 2 - i * _zoom - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 + 6 - _yAxisDisplacement);
 
                 DrawLine(p1, p2, Colors.Magenta, 1);
                 DrawLine(p3, p4, Colors.Magenta, 1);
@@ -103,11 +111,11 @@ namespace CalculatorX
             
             for (float i = 0; i <= _canvas.ActualHeight / 2; i += _step)//ось игреков
             {
-                Point p1 = new Point((float)_canvas.ActualWidth / 2 - 6, (float)_canvas.ActualHeight / 2 + i * _zoom); 
-                Point p2 = new Point((float)_canvas.ActualWidth / 2 + 6, (float)_canvas.ActualHeight / 2 + i * _zoom);
+                Point p1 = new Point((float)_canvas.ActualWidth / 2 - 6 - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 + i * _zoom - _yAxisDisplacement); 
+                Point p2 = new Point((float)_canvas.ActualWidth / 2 + 6 - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 + i * _zoom - _yAxisDisplacement);
 
-                Point p3 = new Point((float)_canvas.ActualWidth / 2 - 6, (float)_canvas.ActualHeight / 2 - i * _zoom);
-                Point p4 = new Point((float)_canvas.ActualWidth / 2 + 6, (float)_canvas.ActualHeight / 2 - i * _zoom);
+                Point p3 = new Point((float)_canvas.ActualWidth / 2 - 6 - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 - i * _zoom - _yAxisDisplacement);
+                Point p4 = new Point((float)_canvas.ActualWidth / 2 + 6 - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 - i * _zoom - _yAxisDisplacement);
 
                 DrawLine(p1, p2, Colors.Purple, 1);
                 DrawLine(p3, p4, Colors.Purple, 1);
@@ -162,7 +170,7 @@ namespace CalculatorX
 
         private void cForGraphic_Loaded(object sender, RoutedEventArgs e)
         {
-            CanvasDrawer canvasDrawer = new CanvasDrawer(cForGraphic, -35, 33, 1, 10);
+            CanvasDrawer canvasDrawer = new CanvasDrawer(cForGraphic, -35, 33, 1, 10, 0, 0);
             canvasDrawer.DrawAxis();
             canvasDrawer.DrawMarks();
             canvasDrawer.DrawTriangle();
@@ -209,24 +217,40 @@ namespace CalculatorX
 
         }
 
+        private void sbAxisX_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            ((ScrollBar)sender).Value = e.NewValue;
+            cForGraphic.Children.Clear();
+            RedrawCanvas();
+
+        }
+        private void sbAxisY_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            ((ScrollBar)sender).Value = e.NewValue;
+            cForGraphic.Children.Clear();
+            RedrawCanvas();
+
+        }
         private void RedrawCanvas()
         {
-            float start = float.Parse(tbStartPosition.Text);
-            float end = float.Parse(tbFinishPosition.Text);
+            float start =(float) -(cForGraphic.ActualWidth / (2 * sZoom.Value));
+            float end = (float) (cForGraphic.ActualWidth / (2 * sZoom.Value));
             float step = (float) sStep.Value;
             float zoom = (float) sZoom.Value;
+            float xAxisDisplacement = (float) sbAxisX.Value;
+            float yAxisDisplacement = (float)sbAxisY.Value;
 
-            CanvasDrawer canvasDrawer = new CanvasDrawer(cForGraphic, start, end, step, zoom);
+            CanvasDrawer canvasDrawer = new CanvasDrawer(cForGraphic, start, end, step, zoom, xAxisDisplacement, yAxisDisplacement);
             canvasDrawer.DrawAxis();
             canvasDrawer.DrawMarks();
             canvasDrawer.DrawTriangle();
 
             RpnCalculator calculator = new RpnCalculator(tbExpression.Text);
             var points = new List<Point>();
-            for (float i = start; i <= end; i += step)
+            for (float i = start + xAxisDisplacement/zoom; i <= end + xAxisDisplacement/zoom; i += step)
             {
                 float result = calculator.Calculate(i);
-                points.Add(new Point(i, result));
+                points.Add(new Point(i-xAxisDisplacement/zoom, result+yAxisDisplacement/zoom));
             }
 
             canvasDrawer.DrawGraphic(points);
