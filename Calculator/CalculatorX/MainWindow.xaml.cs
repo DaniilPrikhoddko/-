@@ -57,10 +57,10 @@ namespace CalculatorX
             _yAxisDisplacement = yAxisDisplacement;
             _canvas = canvas;
 
-            yAxisStart = new Point((int)_canvas.ActualWidth / 2 - _xAxisDisplacement, 0 - yAxisDisplacement);
-            yAxisEnd = new Point((int)_canvas.ActualWidth / 2 - _xAxisDisplacement, (int)_canvas.ActualHeight - yAxisDisplacement);
-            xAxisStart = new Point(0 - _xAxisDisplacement, (int)_canvas.ActualHeight / 2 - yAxisDisplacement);
-            xAxisEnd = new Point((int)_canvas.ActualWidth - _xAxisDisplacement, (int)_canvas.ActualHeight / 2 - yAxisDisplacement);
+            yAxisStart = new Point((int)_canvas.ActualWidth / 2 - _xAxisDisplacement, 0);
+            yAxisEnd = new Point((int)_canvas.ActualWidth / 2 - _xAxisDisplacement, (int)_canvas.ActualHeight);
+            xAxisStart = new Point(0, (int)_canvas.ActualHeight / 2 - _yAxisDisplacement);
+            xAxisEnd = new Point((int)_canvas.ActualWidth, (int)_canvas.ActualHeight / 2 - _yAxisDisplacement);
 
 
            
@@ -98,26 +98,29 @@ namespace CalculatorX
         }
         public void DrawMarks()
         {
-            for (float i=0; i<= _xEnd; i+=_step) //ось иксов
+            for (float i = 0; i <= _xEnd + _xAxisDisplacement; i += _step) //ось иксов
             {
                 Point p1 = new Point((float)_canvas.ActualWidth / 2 + i * _zoom - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 - 6 - _yAxisDisplacement);
                 Point p2 = new Point((float)_canvas.ActualWidth / 2 + i * _zoom - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 + 6 - _yAxisDisplacement);
+                DrawLine(p1, p2, Colors.Magenta, 1);
+            }
+            for (float i = 0; i <= _xEnd -_xAxisDisplacement; i += _step)
+            {
                 Point p3 = new Point((float)_canvas.ActualWidth / 2 - i * _zoom - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 - 6 - _yAxisDisplacement);
                 Point p4 = new Point((float)_canvas.ActualWidth / 2 - i * _zoom - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 + 6 - _yAxisDisplacement);
-
-                DrawLine(p1, p2, Colors.Magenta, 1);
                 DrawLine(p3, p4, Colors.Magenta, 1);
             }
-            
-            for (float i = 0; i <= _canvas.ActualHeight / 2; i += _step)//ось игреков
+
+            for (float i = 0; i <= _canvas.ActualHeight / 2 + _yAxisDisplacement; i += _step)//ось игреков
             {
-                Point p1 = new Point((float)_canvas.ActualWidth / 2 - 6 - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 + i * _zoom - _yAxisDisplacement); 
-                Point p2 = new Point((float)_canvas.ActualWidth / 2 + 6 - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 + i * _zoom - _yAxisDisplacement);
-
-                Point p3 = new Point((float)_canvas.ActualWidth / 2 - 6 - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 - i * _zoom - _yAxisDisplacement);
-                Point p4 = new Point((float)_canvas.ActualWidth / 2 + 6 - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 - i * _zoom - _yAxisDisplacement);
-
+                Point p1 = new Point((float)_canvas.ActualWidth / 2 - 6 - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 - _yAxisDisplacement + i * _zoom);
+                Point p2 = new Point((float)_canvas.ActualWidth / 2 + 6 - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 - _yAxisDisplacement + i * _zoom);
                 DrawLine(p1, p2, Colors.Purple, 1);
+            }
+            for (float i = 0; i <= _canvas.ActualHeight / 2 - _yAxisDisplacement; i += _step)
+            {
+                Point p3 = new Point((float)_canvas.ActualWidth / 2 - 6 - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 - _yAxisDisplacement - i * _zoom);
+                Point p4 = new Point((float)_canvas.ActualWidth / 2 + 6 - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 - _yAxisDisplacement - i * _zoom);
                 DrawLine(p3, p4, Colors.Purple, 1);
             }
         }
@@ -125,16 +128,16 @@ namespace CalculatorX
         {
             DrawPolygon(new PointCollection
             {
-                new Point(_canvas.ActualWidth - 10, _canvas.ActualHeight / 2 + 5),
-                new Point(_canvas.ActualWidth, _canvas.ActualHeight / 2),
-                new Point(_canvas.ActualWidth - 10, _canvas.ActualHeight / 2 - 5)
+                new Point(_canvas.ActualWidth - 10, _canvas.ActualHeight / 2 + 5 - _yAxisDisplacement),
+                new Point(_canvas.ActualWidth, _canvas.ActualHeight / 2 - _yAxisDisplacement),
+                new Point(_canvas.ActualWidth - 10, _canvas.ActualHeight / 2 - 5 - _yAxisDisplacement)
             });
 
             DrawPolygon(new PointCollection
             {
-                new Point(_canvas.ActualWidth / 2 - 5, 10),
-                new Point(_canvas.ActualWidth / 2, 0),
-                new Point(_canvas.ActualWidth / 2 + 5, 10)
+                new Point(_canvas.ActualWidth / 2 - 5 - _xAxisDisplacement, 10),
+                new Point(_canvas.ActualWidth / 2 - _xAxisDisplacement, 0),
+                new Point(_canvas.ActualWidth / 2 + 5 - _xAxisDisplacement, 10)
              });
         }
 
@@ -177,10 +180,8 @@ namespace CalculatorX
         }
         private void btnStart(object sender, RoutedEventArgs e)
         {
-            //cForGraphic.Children.Clear();
-            //RedrawCanvas(10);
-            //float valueOfVariable = float.Parse(tbVariableValue.Text);
-            //lblResult.Content = new RpnCalculator(tbExpression.Text).Calculate(valueOfVariable);
+            RedrawCanvas();
+            lblStep.Content = (float)sStep.Value;
         }
         private void cForGraphic_MouseMove(object sender, MouseEventArgs e)
         {
@@ -195,7 +196,7 @@ namespace CalculatorX
         {
             ((Slider)sender).Value = e.NewValue;
             cForGraphic.Children.Clear();
-            if (!(string.IsNullOrEmpty(tbExpression.Text) && string.IsNullOrEmpty(tbFinishPosition.Text) && string.IsNullOrEmpty(tbStartPosition.Text)))
+            if (!(string.IsNullOrEmpty(tbExpression.Text)))
             {
                 RedrawCanvas();
                 lblStep.Content = (float) sStep.Value;
@@ -209,7 +210,7 @@ namespace CalculatorX
                 sStep.Value = 1 / sZoom.Value * 10;
             }
             cForGraphic.Children.Clear();
-            if (! (string.IsNullOrEmpty(tbExpression.Text) && string.IsNullOrEmpty(tbFinishPosition.Text) && string.IsNullOrEmpty(tbStartPosition.Text)))
+            if (! (string.IsNullOrEmpty(tbExpression.Text)))
             {
                 RedrawCanvas();
                 lblZoom.Content = (int) sZoom.Value;

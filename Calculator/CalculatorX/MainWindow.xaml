@@ -8,22 +8,18 @@
         Title="Calculator" Height="432" Width="1355">
     <Grid x:Name="grid" Margin="0,0,0,-6" Background="#FFFBF0FB" HorizontalAlignment="Center" Width="1356">
 
-        <Button x:Name="btnGetResult" IsDefault="True" Click="btnStart" Content="вычислить выражение" HorizontalAlignment="Left" Height="40" Margin="837,346,0,0" VerticalAlignment="Top" Width="294" BorderBrush="#FFF485F5" Background="White" FontSize="20" FontFamily="Arial" Foreground="#FF2F0909" BorderThickness="3,3,3,3" FontWeight="Bold"/>
+        <Button x:Name="btnGetResult" IsDefault="True" Click="btnStart" Content="вычислить выражение" HorizontalAlignment="Left" Height="112" Margin="918,277,0,0" VerticalAlignment="Top" Width="294" BorderBrush="#FFF485F5" Background="White" FontSize="24" FontFamily="Arial" Foreground="#FF2F0909" BorderThickness="3,3,3,3" FontWeight="Bold"/>
         <TextBox x:Name="tbExpression" HorizontalAlignment="Left" Height="28" TextWrapping="Wrap" VerticalAlignment="Top" Width="294" FontSize="16" Margin="918,52,0,0" TextAlignment="Center"/>
         <TextBlock HorizontalAlignment="Left" Margin="959,20,0,0" TextWrapping="Wrap" Text="Введите выражение:" VerticalAlignment="Top" Height="32" Width="212" FontSize="16" TextAlignment="Center"/>
-        <TextBlock HorizontalAlignment="Left" Height="30" Margin="932,80,0,0" TextWrapping="Wrap" Text="Начало" VerticalAlignment="Top" Width="266" FontSize="16" TextAlignment="Center"/>
-        <TextBox x:Name="tbStartPosition" HorizontalAlignment="Left" Height="28" Margin="918,110,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="294" FontSize="16" TextAlignment="Center"/>
-        <TextBlock HorizontalAlignment="Left" Height="30" Margin="944,138,0,0" TextWrapping="Wrap" Text="Конец" VerticalAlignment="Top" Width="242" FontSize="16" TextAlignment="Center"/>
-        <TextBox x:Name="tbFinishPosition" HorizontalAlignment="Left" Height="28" Margin="918,168,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="294" FontSize="16" TextAlignment="Center"/>
         <Canvas x:Name="cForGraphic" Loaded="cForGraphic_Loaded" Margin="13,24,603,94" Background="White" MouseMove="cForGraphic_MouseMove" ClipToBounds="True"/>
-        <TextBlock HorizontalAlignment="Left" Height="30" Margin="918,189,0,0" TextWrapping="Wrap" Text="Шаг" VerticalAlignment="Top" Width="294" FontSize="16" TextAlignment="Center"/>
+        <TextBlock HorizontalAlignment="Left" Height="30" Margin="918,98,0,0" TextWrapping="Wrap" Text="Шаг" VerticalAlignment="Top" Width="294" FontSize="16" TextAlignment="Center"/>
         <Label x:Name="lblUiCoordinates" Content="" HorizontalAlignment="Left" Margin="35,358,0,0" VerticalAlignment="Top" Width="246" FontSize="16" HorizontalContentAlignment="Center"/>
         <Label x:Name="lblMathCoordinates" Content="" HorizontalAlignment="Left" Margin="286,358,0,0" VerticalAlignment="Top" Width="246" FontSize="16" HorizontalContentAlignment="Center"/>
-        <TextBlock HorizontalAlignment="Left" Height="30" Margin="918,251,0,0" TextWrapping="Wrap" Text="Масштаб" VerticalAlignment="Top" Width="294" TextAlignment="Center" FontSize="16"/>
-        <Slider x:Name="sZoom" HorizontalAlignment="Left" Margin="918,283,0,0" VerticalAlignment="Top" Width="294" Orientation="Horizontal" Height="22" Maximum="300" Minimum="1" ValueChanged="sZoom_ValueChanged" IsSelectionRangeEnabled="True" Value="1" />
-        <Label x:Name="lblZoom" Content="" HorizontalAlignment="Left" Height="30" Margin="1212,275,0,0" VerticalAlignment="Top" Width="41" FontSize="16"/>
-        <Slider x:Name="sStep" HorizontalAlignment="Left" Margin="918,224,0,0" VerticalAlignment="Top" Width="294" Orientation="Horizontal" Height="22" Maximum="10" Minimum="0.05" ValueChanged="sStep_ValueChanged" IsSelectionRangeEnabled="True" Value="1" />
-        <Label x:Name="lblStep" Content="" HorizontalAlignment="Left" Height="30" Margin="1215,220,0,0" VerticalAlignment="Top" Width="68" FontSize="16"/>
+        <TextBlock HorizontalAlignment="Left" Height="30" Margin="918,176,0,0" TextWrapping="Wrap" Text="Масштаб" VerticalAlignment="Top" Width="294" TextAlignment="Center" FontSize="16"/>
+        <Slider x:Name="sZoom" HorizontalAlignment="Left" Margin="918,219,0,0" VerticalAlignment="Top" Width="294" Orientation="Horizontal" Height="22" Maximum="300" Minimum="1" ValueChanged="sZoom_ValueChanged" IsSelectionRangeEnabled="True" Value="1" />
+        <Label x:Name="lblZoom" Content="" HorizontalAlignment="Left" Height="30" Margin="1232,211,0,0" VerticalAlignment="Top" Width="41" FontSize="16"/>
+        <Slider x:Name="sStep" HorizontalAlignment="Left" Margin="918,138,0,0" VerticalAlignment="Top" Width="294" Orientation="Horizontal" Height="22" Maximum="10" Minimum="0.05" ValueChanged="sStep_ValueChanged" IsSelectionRangeEnabled="True" Value="10" />
+        <Label x:Name="lblStep" Content="" HorizontalAlignment="Left" Height="30" Margin="1232,134,0,0" VerticalAlignment="Top" Width="68" FontSize="16"/>
         <ScrollBar x:Name="sbAxisX" HorizontalAlignment="Left" Height="20" Margin="13,333,0,0" VerticalAlignment="Top" Width="740" Orientation="Horizontal" Minimum="-100" Maximum="100" LargeChange="5" ValueChanged="sbAxisX_ValueChanged"/>
         <ScrollBar x:Name="sbAxisY" HorizontalAlignment="Left" Margin="775,24,0,0" VerticalAlignment="Top" Height="304" Width="21" LargeChange="5" Maximum="100" Minimum="-100" Value="0" ValueChanged="sbAxisX_ValueChanged"/>
 
