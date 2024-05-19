@@ -17,11 +17,12 @@ namespace RPNCalc
         private string userInput;
         public static void Tokenize(string userStr, ref List<Tokens> token)
         {
-            userStr = userStr.Replace(" ", "");
-            userStr = userStr.ToLower();
+            userStr = userStr.Replace(" ", "").ToLower();
             string operators = "+-*/^";
             string numbersStr = null;
             string lettersStr = string.Empty;
+
+
             foreach (char i in userStr)
             {
                 if (Char.IsDigit(i))
@@ -42,90 +43,26 @@ namespace RPNCalc
 
                 else if (operators.Contains(i))
                 {
-                    if (numbersStr != null)
-                    {
-                        token.Add(new Number(numbersStr));  
-                        numbersStr = null;
-                    }
-                    if (lettersStr != string.Empty)
-                    {
-                        if (lettersStr.Length == 1)
-                        {
-                            token.Add(new Variable(Convert.ToChar(lettersStr)));
-                        }
-                        else
-                        {
-                            token.Add(new Operation(lettersStr));
-                        }
-                        lettersStr = string.Empty;
-
-                    }
+                    AddNumberAndLetterTokens(token, ref numbersStr, ref lettersStr);
                     token.Add(new Operation(i));
 
                 }
                 else if (i == '(' || i == ')')
                 {
 
-                    if (numbersStr != null)
-                    {
-                        token.Add(new Number(numbersStr));
-                        numbersStr = null;
-                    }
-                    else if (lettersStr != string.Empty)
-                    {
-                        if (lettersStr.Length == 1)
-                        {
-                            token.Add(new Variable(Convert.ToChar(lettersStr)));
-                        }
-                        else
-                        {
-                            token.Add(new Operation(lettersStr));
-                        }
-                        lettersStr = string.Empty;
-                    }
-                    //if (lettersStr == null || !(token.Count > 0 && token.Last() is Operation))
-                    //{
-                    //    token.Add(new Parenthesis(i));
-                    //}
+                    AddNumberAndLetterTokens(token, ref numbersStr, ref lettersStr);
                     token.Add(new Parenthesis(i));
 
                 }
-                else if (i == ',')
+                else if (i == ',' || i == '.')
                 {
                     numbersStr += ",";
                 }
-                else if (i == '.')
-                {
-                    numbersStr += ",";
-                }
-                else if (i == ';')
-                {
-                    if (lettersStr.Length >0)
-                    {
-                        if (lettersStr.Length == 1)
-                        {
-                            token.Add(new Variable(Convert.ToChar(lettersStr)));
-                        }
-                        else
-                        {
-                            token.Add(new Operation(lettersStr));
-                        }
-                        lettersStr = string.Empty; 
-                        token.Add(new Delimiter(i));    
-                    }
 
-                    else if (numbersStr.Length > 0)
-                    {
-                        token.Add(new Number(numbersStr));
-                        token.Add(new Delimiter(i));
-                        numbersStr = null;
-                    }
-
-                    else
-                    {
-                        numbersStr += i;
-                    }
-                    
+                else if (char.IsPunctuation(i))
+                {
+                    AddNumberAndLetterTokens(token, ref numbersStr, ref lettersStr);
+                    token.Add(new Delimiter(i));
                 }
 
                 else
@@ -135,23 +72,29 @@ namespace RPNCalc
 
             }
 
-            if (numbersStr != null)
-            {
-                token.Add(new Number(numbersStr));
-            }
-            else if (lettersStr != string.Empty)
-            {
-                if (lettersStr.Length == 1)
-                {
-                    token.Add(new Variable(Convert.ToChar(lettersStr)));
-                }
-                else
-                {
-                    token.Add(new Operation(lettersStr));
-                }
-                lettersStr = string.Empty;
-            }
+            AddNumberAndLetterTokens(token, ref numbersStr, ref lettersStr);
 
+            static void AddNumberAndLetterTokens(List<Tokens> token, ref string numbersStr, ref string lettersStr)
+            {
+                if (numbersStr != null)
+                {
+                    token.Add(new Number(numbersStr));
+                    numbersStr = null;
+                }
+                if (lettersStr != string.Empty)
+                {
+                    if (lettersStr.Length == 1)
+                    {
+                        token.Add(new Variable(Convert.ToChar(lettersStr)));
+                    }
+                    else
+                    {
+                        token.Add(new Operation(lettersStr));
+                    }
+                    lettersStr = string.Empty;
+
+                }
+            }
         }
 
         static void RPNImport(List<Tokens> token, ref List<Tokens> RPN)
@@ -278,7 +221,7 @@ namespace RPNCalc
                     string[] tangentOperationNames = new string[] { "tg", "tan" };
                     string[] rootOperationNames = new string[] { "rt", "root" };
 
-                    if (rootOperationNames.Any(x => x.Equals(operation.nameOfMathOperation, StringComparison.OrdinalIgnoreCase)))
+                    if (rootOperationNames.Contains(operation.nameOfMathOperation))
                     {
                         float power = ((Number)stackForResult.Pop()).number;
                         intermediateValue = (float) Math.Pow(((Number)stackForResult.Pop()).number, 1 / power);
@@ -294,12 +237,12 @@ namespace RPNCalc
                         intermediateValue = (float) Math.Sqrt(((Number)stackForResult.Pop()).number);
                     }
 
-                    else if (cotangentOperationNames.Any(x => x.Equals(operation.nameOfMathOperation, StringComparison.OrdinalIgnoreCase)))
+                    else if (cotangentOperationNames.Contains(operation.nameOfMathOperation))
                     {
                         intermediateValue = 1/(float)Math.Tan(((Number)stackForResult.Pop()).number);
                     }
 
-                    else if (tangentOperationNames.Any(x => x.Equals(operation.nameOfMathOperation, StringComparison.OrdinalIgnoreCase)))
+                    else if (tangentOperationNames.Contains(operation.nameOfMathOperation))
                     {
                         intermediateValue = (float)Math.Tan(((Number)stackForResult.Pop()).number);
                     }

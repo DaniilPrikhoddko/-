@@ -31,9 +31,6 @@ namespace CalculatorX
     class CanvasDrawer
     {
         private Canvas _canvas;
-        //private double _axisThickness = 1;
-        //private Brush _defaultStroke = Brushes.Black;
-        //private int _scaleLength = 5;
 
         Point xAxisStart;
         Point xAxisEnd;
