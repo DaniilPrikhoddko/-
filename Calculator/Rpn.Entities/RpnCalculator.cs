@@ -199,7 +199,7 @@ namespace RPNCalc
 
         }
 
-        public static float CalculateExpression(List<Tokens> RPN, float valueOfVariable)
+        public float CalculateExpression(List<Tokens> RPN, float valueOfVariable)
         {
             float result = 0;
             float intermediateValue = 0;
@@ -262,6 +262,16 @@ namespace RPNCalc
                         intermediateValue = (float)(1/Math.Log(((Number)stackForResult.Pop()).number) * Math.Log(((Number)stackForResult.Pop()).number));
                     }
 
+                    else if (operation.nameOfMathOperation == "ln")
+                    {
+                        intermediateValue = (float)Math.Log(((Number)stackForResult.Pop()).number);
+                    }
+
+                    else if (operation.nameOfMathOperation == "lg")
+                    {
+                        intermediateValue = (float)Math.Log10(((Number)stackForResult.Pop()).number);
+                    }
+
                     else if (operation.operation == '+')
                     {
                         intermediateValue = AddNum(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
@@ -290,8 +300,17 @@ namespace RPNCalc
 
                 }
 
-            }
+            } 
             result = (float)((Number)stackForResult.Pop()).number;
+
+            if (float.IsPositiveInfinity(result))
+            {
+                result = 16777215;
+            }
+            else if (float.IsNegativeInfinity(result))
+            {
+                result = -16777215;
+            }
             return result;
         }
 
@@ -325,15 +344,14 @@ namespace RPNCalc
             float sum = term1 + term2;
             return sum;
         }
-        public float Calculate(float valueOfVariable)
+        public List<Tokens> GetRPN()
         {
             List<Tokens> token = new List<Tokens>();
             List<Tokens> RPN = new List<Tokens>();
 
             Tokenize(userInput, ref token);
-            RPNImport(token, ref RPN);
-            float result = CalculateExpression(RPN, valueOfVariable);
-            return result;
+            RPNImport(token, ref RPN);           
+            return RPN;
         }
         public RpnCalculator(string userStr)
         {

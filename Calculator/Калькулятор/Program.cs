@@ -19,8 +19,9 @@ namespace RPNCalc
             string userInput = Console.ReadLine();
             Console.WriteLine("Введите значение переменной");
             float valueOfVariable = float.Parse(Console.ReadLine());
-            var rpn = new RpnCalculator(userInput);
-            float result = rpn.Calculate(valueOfVariable);
+            var calculator = new RpnCalculator(userInput);
+            List<Tokens> RPN = calculator.GetRPN();
+            float result = calculator.CalculateExpression(RPN, valueOfVariable);
             Console.WriteLine("Ответ:");
             Console.WriteLine(result);
         }

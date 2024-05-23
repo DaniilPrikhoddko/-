@@ -95,13 +95,13 @@ namespace CalculatorX
         }
         public void DrawMarks()
         {
-            for (float i = 0; i <= _xEnd + _xAxisDisplacement; i += _step) //ось иксов
+            for (float i = 0; i <= _canvas.ActualWidth/2 + _xAxisDisplacement; i += _step) //ось иксов
             {
                 Point p1 = new Point((float)_canvas.ActualWidth / 2 + i * _zoom - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 - 6 - _yAxisDisplacement);
                 Point p2 = new Point((float)_canvas.ActualWidth / 2 + i * _zoom - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 + 6 - _yAxisDisplacement);
                 DrawLine(p1, p2, Colors.Magenta, 1);
             }
-            for (float i = 0; i <= _xEnd -_xAxisDisplacement; i += _step)
+            for (float i = 0; i <= _canvas.ActualWidth/2 - _xAxisDisplacement; i += _step)
             {
                 Point p3 = new Point((float)_canvas.ActualWidth / 2 - i * _zoom - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 - 6 - _yAxisDisplacement);
                 Point p4 = new Point((float)_canvas.ActualWidth / 2 - i * _zoom - _xAxisDisplacement, (float)_canvas.ActualHeight / 2 + 6 - _yAxisDisplacement);
@@ -177,6 +177,7 @@ namespace CalculatorX
         }
         private void btnStart(object sender, RoutedEventArgs e)
         {
+            cForGraphic.Children.Clear();
             RedrawCanvas();
             lblStep.Content = (float)sStep.Value;
         }
@@ -236,7 +237,7 @@ namespace CalculatorX
             float step = (float) sStep.Value;
             float zoom = (float) sZoom.Value;
             float xAxisDisplacement = (float) sbAxisX.Value;
-            float yAxisDisplacement = (float)sbAxisY.Value;
+            float yAxisDisplacement = (float) sbAxisY.Value;
 
             CanvasDrawer canvasDrawer = new CanvasDrawer(cForGraphic, start, end, step, zoom, xAxisDisplacement, yAxisDisplacement);
             canvasDrawer.DrawAxis();
@@ -245,10 +246,24 @@ namespace CalculatorX
 
             RpnCalculator calculator = new RpnCalculator(tbExpression.Text);
             var points = new List<Point>();
+            List<Tokens> RPN = calculator.GetRPN();
+            float lastY = 0;
+            float result = 0;
             for (float i = start + xAxisDisplacement/zoom; i <= end + xAxisDisplacement/zoom; i += step)
             {
-                float result = calculator.Calculate(i);
-                points.Add(new Point(i-xAxisDisplacement/zoom, result+yAxisDisplacement/zoom));
+                lastY = 0;
+                result = calculator.CalculateExpression(RPN, i);
+                if (float.IsNaN(result) || Math.Abs(lastY-result) >= cForGraphic.ActualHeight)
+                {
+                    canvasDrawer.DrawGraphic(points);
+                    points.Clear();
+                }
+                else
+                {
+                    points.Add(new Point(i - xAxisDisplacement / zoom, result + yAxisDisplacement / zoom));
+                    lastY = result;
+                }
+                
             }
 
             canvasDrawer.DrawGraphic(points);

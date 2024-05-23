@@ -20,8 +20,8 @@
         <Label x:Name="lblZoom" Content="" HorizontalAlignment="Left" Height="30" Margin="1232,211,0,0" VerticalAlignment="Top" Width="41" FontSize="16"/>
         <Slider x:Name="sStep" HorizontalAlignment="Left" Margin="918,138,0,0" VerticalAlignment="Top" Width="294" Orientation="Horizontal" Height="22" Maximum="10" Minimum="0.05" ValueChanged="sStep_ValueChanged" IsSelectionRangeEnabled="True" Value="10" />
         <Label x:Name="lblStep" Content="" HorizontalAlignment="Left" Height="30" Margin="1232,134,0,0" VerticalAlignment="Top" Width="68" FontSize="16"/>
-        <ScrollBar x:Name="sbAxisX" HorizontalAlignment="Left" Height="20" Margin="13,333,0,0" VerticalAlignment="Top" Width="740" Orientation="Horizontal" Minimum="-100" Maximum="100" LargeChange="5" ValueChanged="sbAxisX_ValueChanged"/>
-        <ScrollBar x:Name="sbAxisY" HorizontalAlignment="Left" Margin="775,24,0,0" VerticalAlignment="Top" Height="304" Width="21" LargeChange="5" Maximum="100" Minimum="-100" Value="0" ValueChanged="sbAxisX_ValueChanged"/>
+        <ScrollBar x:Name="sbAxisX" HorizontalAlignment="Left" Height="20" Margin="13,333,0,0" VerticalAlignment="Top" Width="740" Orientation="Horizontal" Minimum="-1000" Maximum="1000" LargeChange="5" ValueChanged="sbAxisX_ValueChanged"/>
+        <ScrollBar x:Name="sbAxisY" HorizontalAlignment="Left" Margin="775,24,0,0" VerticalAlignment="Top" Height="304" Width="21" LargeChange="5" Maximum="1000" Minimum="-1000" Value="0" ValueChanged="sbAxisX_ValueChanged"/>
 
     </Grid>
 </Window>
