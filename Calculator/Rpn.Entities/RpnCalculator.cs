@@ -274,27 +274,28 @@ namespace RPNCalc
 
                     else if (operation.operation == '+')
                     {
-                        intermediateValue = AddNum(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
+                        intermediateValue = ((Number)stackForResult.Pop()).number + ((Number)stackForResult.Pop()).number;
                     }
 
                     else if (operation.operation == '-')
                     {
-                        intermediateValue = SubtractNum(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
+                        intermediateValue = -((Number)stackForResult.Pop()).number + ((Number)stackForResult.Pop()).number;
                     }
 
                     else if (operation.operation == '*')
                     {
-                        intermediateValue = MultiplyNum(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
+                        intermediateValue = ((Number)stackForResult.Pop()).number * ((Number)stackForResult.Pop()).number;
                     }
 
                     else if (operation.operation == '/')
                     {
-                        intermediateValue = DivideNum(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
+                        intermediateValue = 1/((Number)stackForResult.Pop()).number * ((Number)stackForResult.Pop()).number;
                     }
 
                     else if (operation.operation == '^')
                     {
-                        intermediateValue = RaiseNumToPower(((Number)stackForResult.Pop()).number, ((Number)stackForResult.Pop()).number);
+                        float power = ((Number)stackForResult.Pop()).number;
+                        intermediateValue = (float)Math.Pow(((Number)stackForResult.Pop()).number, power);
                     }
                     stackForResult.Push((new Number(intermediateValue)));
 
@@ -314,36 +315,6 @@ namespace RPNCalc
             return result;
         }
 
-        private static float RaiseNumToPower(float degree, float num)
-        {
-
-            float exponentiation = (float)Math.Pow(num, degree);
-            return exponentiation;
-        }
-
-        private static float DivideNum(float divisor, float dividend)
-        {
-            float quotient = dividend / divisor;
-            return quotient;
-        }
-
-        private static float MultiplyNum(float factor1, float factor2)
-        {
-            float multiplication = factor1 * factor2;
-            return multiplication;
-        }
-
-        private static float SubtractNum(float subtrahend, float minuend)
-        {
-            float difference = minuend - subtrahend;
-            return difference;
-        }
-
-        private static float AddNum(float term1, float term2)
-        {
-            float sum = term1 + term2;
-            return sum;
-        }
         public List<Tokens> GetRPN()
         {
             List<Tokens> token = new List<Tokens>();
@@ -356,109 +327,6 @@ namespace RPNCalc
         public RpnCalculator(string userStr)
         {
             userInput = userStr;
-        }
-    }
-    
-    public class Tokens
-    {
-
-    }
-    public class Variable : Tokens
-    {
-        public char variableName { get; set;}
-        public Variable(char name)
-        {
-            variableName = name;
-        }
-        public override string ToString()
-        {
-            return Convert.ToString(variableName);
-        }
-    }
-    public class Parenthesis : Tokens
-    {
-        char parenthesis = ' ';
-        public bool itIsCloseParenthesis = false;
-        public bool itIsOpenParenthesis = false;
-        public Parenthesis(char i)
-        {
-            parenthesis = i;
-            if (i == ')')
-            {
-                itIsCloseParenthesis = true;
-            }
-            else
-            {
-                itIsOpenParenthesis = true;
-            }
-        }
-        public override string ToString()
-        {
-            return Convert.ToString(parenthesis);
-        }
-    }
-    public class Number : Tokens
-    {
-        public float number = 0;
-        public Number(string a)
-        {
-            number = float.Parse(a);
-        }
-        public Number(float num)
-        {
-            number = num;
-        }
-        public override string ToString()
-        {
-            return Convert.ToString(number);
-        }
-    }
-    public class Delimiter : Tokens
-    {
-        public char delimiter = ' ';
-        public Delimiter(char i)
-        {
-            delimiter = i;
-        }
-    }
-    public class Operation : Tokens
-    {
-        public char operation = ' ';
-        public int priorityOfOperation = 0;
-        public string nameOfMathOperation = null;
-        public Operation(char i)
-        {
-            operation = i;
-            priorityOfOperation = ConvertOperarionToPriority(i);
-
-        }
-        public Operation(string i)
-        {
-            nameOfMathOperation = i;
-            priorityOfOperation = 5;
-        }
-        public override string ToString()
-        {
-            if (nameOfMathOperation == null)
-            {
-                return Convert.ToString(operation);
-            }
-            else
-            {
-                return Convert.ToString(nameOfMathOperation);
-            }   
-        }
-        public int ConvertOperarionToPriority(char i)
-        {
-            Dictionary<char, int> OperationPriority = new Dictionary<char, int>()
-            {
-                {'+', 2 },
-                {'-', 2 },
-                {'*', 3 },
-                {'/', 3 },
-                {'^', 4 },
-            };
-            return OperationPriority[i];
         }
     }
 }
