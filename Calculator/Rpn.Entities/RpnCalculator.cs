@@ -36,6 +36,7 @@ namespace RPNCalc
                     numbersStr += i;
 
                 }
+
                 else if (Char.IsLetter(i))
                 {
                     lettersStr += i;
@@ -47,6 +48,7 @@ namespace RPNCalc
                     token.Add(new Operation(i));
 
                 }
+
                 else if (i == '(' || i == ')')
                 {
 
@@ -54,6 +56,7 @@ namespace RPNCalc
                     token.Add(new Parenthesis(i));
 
                 }
+
                 else if (i == ',' || i == '.')
                 {
                     numbersStr += ",";
@@ -81,16 +84,19 @@ namespace RPNCalc
                     token.Add(new Number(numbersStr));
                     numbersStr = null;
                 }
+
                 if (lettersStr != string.Empty)
                 {
                     if (lettersStr.Length == 1)
                     {
                         token.Add(new Variable(Convert.ToChar(lettersStr)));
                     }
+
                     else
                     {
                         token.Add(new Operation(lettersStr));
                     }
+
                     lettersStr = string.Empty;
 
                 }
@@ -127,6 +133,7 @@ namespace RPNCalc
                         }
 
                     }
+
                 }
 
                 else if (tok is Variable variable)
@@ -210,6 +217,7 @@ namespace RPNCalc
                 {
                     stackForResult.Push(elem);
                 }
+
                 else if (elem is Variable variable)
                 {
                     stackForResult.Push(new Number(valueOfVariable));
@@ -297,8 +305,8 @@ namespace RPNCalc
                         float power = ((Number)stackForResult.Pop()).number;
                         intermediateValue = (float)Math.Pow(((Number)stackForResult.Pop()).number, power);
                     }
-                    stackForResult.Push((new Number(intermediateValue)));
 
+                    stackForResult.Push((new Number(intermediateValue)));
                 }
 
             } 
@@ -308,10 +316,12 @@ namespace RPNCalc
             {
                 result = 16777215;
             }
+
             else if (float.IsNegativeInfinity(result))
             {
                 result = -16777215;
             }
+
             return result;
         }
 

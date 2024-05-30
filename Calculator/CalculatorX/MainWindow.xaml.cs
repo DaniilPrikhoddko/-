@@ -49,6 +49,7 @@ namespace CalculatorX
                 RedrawCanvas();
                 lblStep.Content = (float) sStep.Value;
             }
+
         }
         private void sZoom_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -57,6 +58,7 @@ namespace CalculatorX
             {
                 sStep.Value = 1 / sZoom.Value * 10;
             }
+
             cForGraphic.Children.Clear();
             if (! (string.IsNullOrEmpty(tbExpression.Text)))
             {
@@ -71,14 +73,12 @@ namespace CalculatorX
             ((ScrollBar)sender).Value = e.NewValue;
             cForGraphic.Children.Clear();
             RedrawCanvas();
-
         }
         private void sbAxisY_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             ((ScrollBar)sender).Value = e.NewValue;
             cForGraphic.Children.Clear();
             RedrawCanvas();
-
         }
         private void RedrawCanvas()
         {
@@ -103,11 +103,17 @@ namespace CalculatorX
             for (float i = start + xAxisDisplacement/zoom; i <= end + xAxisDisplacement/zoom; i += step)
             {
                 result = calculator.CalculateExpression(RPN, i);
-                if (float.IsNaN(result) || Math.Abs(lastY - result) >= cForGraphic.ActualHeight)
+                if (float.IsNaN(result) || Math.Abs(lastY - result) >= cForGraphic.ActualHeight / zoom)
                 {
+                    if (!float.IsNaN(result))
+                    {
+                        lastY = result;
+                    }
+
                     canvasDrawer.DrawGraphic(points);
                     points.Clear();
                 }
+
                 else
                 {
                     points.Add(new Point(i - xAxisDisplacement / zoom, result + yAxisDisplacement / zoom));
